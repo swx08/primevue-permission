@@ -11,9 +11,12 @@
                 severity="secondary" size="small" />
         </span>
         <span>
-            <Button icon="pi pi-user" severity="secondary" rounded text @click="toggle">
-                <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/onyamalimba.png" shape="circle" />
-            </Button>
+            <div @click="toggle">
+                <Button icon="pi pi-user" severity="secondary" rounded text>
+                    <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/onyamalimba.png" shape="circle" />
+                </Button>
+                <span>Admin</span>
+            </div>
             <Menu ref="menu" id="config_menu" :model="items" popup>
                 <template #item="{ item, props }">
                     <a v-ripple class="flex items-center" v-bind="props.action" @click="handler(item)">
@@ -80,5 +83,10 @@ const handleChangeScreen = () => {
 
 .header-right span {
     margin: 0 10px 0 10px;
+}
+
+.header-right span:nth-last-child(1)>div {
+    display: flex;
+    align-items: center;
 }
 </style>

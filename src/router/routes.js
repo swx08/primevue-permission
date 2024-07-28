@@ -1,6 +1,16 @@
 // 路由配置
 const routes = [
   {
+    path: "/login",
+    name: "Login",
+    component: () => import("@/views/login/Index.vue"),
+    meta: {
+      title: "登录",
+      hidden: true,
+      icon: "",
+    },
+  },
+  {
     path: "/",
     component: () => import("@/components/layout/Index.vue"),
     redirect: "/home",

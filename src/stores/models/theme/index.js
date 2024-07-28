@@ -8,6 +8,27 @@ export const useThemeStore = defineStore("theme", () => {
   const dark = ref(false);
   const theme = ref(0);
   const isSimple = ref(false);
+  const currentMenuBgColor = ref("#FFFFFF");
+  const simpleMenuColor = ref([
+    "#FFFFFF",
+    "#dedeff",
+    "#cee8ff",
+    "#F5ECD7",
+    "#D0EBEA",
+    "#e0e0e0",
+    "#61bc84",
+    "#acc2ef",
+  ]);
+  const businessMenuColor = ref([
+    "#0085ff",
+    "#18181b",
+    "#00668c",
+    "#313d44",
+    "#3b3c3d",
+    "#1F3A5F",
+    "#24613b",
+    "#5e3b00",
+  ]);
 
   const setTheme = (item) => {
     if (item === "aura") {
@@ -24,6 +45,9 @@ export const useThemeStore = defineStore("theme", () => {
     dark,
     theme,
     setTheme,
-    isSimple
+    isSimple,
+    currentMenuBgColor,
+    simpleMenuColor,
+    businessMenuColor
   };
 });
