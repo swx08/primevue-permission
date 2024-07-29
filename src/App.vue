@@ -1,10 +1,10 @@
 <template>
   <router-view v-slot="{ Component }">
-      <!-- 添加动画效果 -->
-      <transition name="fade">
-        <component :is="Component" />
-      </transition>
-    </router-view>
+    <!-- 添加动画效果 -->
+    <transition name="fade">
+      <component :is="Component" />
+    </transition>
+  </router-view>
 </template>
 
 <style>
