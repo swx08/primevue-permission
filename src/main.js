@@ -13,14 +13,13 @@ import Nora from "@primevue/themes/nora";
 import ToastService from "primevue/toastservice";
 import Tooltip from "primevue/tooltip";
 
+//弹窗提示插件
 import Vue3Toasity from "vue3-toastify";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 
 //Pinia
 import pinia from "@/stores/index";
-//引入pina持久化插件
-import { createPersistedState } from "pinia-persistedstate-plugin";
 
 //路由
 import router from "@/router";
@@ -34,11 +33,8 @@ import globalComponent from "@/plugins";
 import { useThemeStore } from "@/stores/models/theme";
 
 const app = createApp(App);
-const persist = createPersistedState();
-app.use(pinia);
-pinia.use(persist);
 
-//提示组件配置
+//弹窗提示插件配置
 app.use(Vue3Toasity, {
   autoClose: 3000,
   transition: toast.TRANSITIONS.FLIP,
@@ -62,6 +58,7 @@ app.use(PrimeVue, {
 app.directive("tooltip", Tooltip);
 app.use(ToastService);
 
+app.use(pinia);
 app.use(router);
 
 app.mount("#app");
