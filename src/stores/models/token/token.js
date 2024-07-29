@@ -1,14 +1,14 @@
-// 导入 defineStore 和 ref 方法
-import { defineStore } from "pinia";
-import { ref } from "vue";
+//本地存储token
+export const SET_TOKEN = (token) => {
+  localStorage.setItem("TOKEN", token);
+};
 
-// 定义名为 useTokenStore 的 store
-export const useTokenStore = defineStore("token", () => {
-  // 创建一个名为 token 的响应式变量
-  const token = ref("");
+//删除token
+export const REMOVE_TOKEN = () => {
+  localStorage.removeItem("TOKEN");
+};
 
-  // 返回 token 变量
-  return {
-    token,
-  };
-});
+//获取token
+export const GET_TOKEN = () => {
+  return localStorage.getItem("TOKEN");
+};

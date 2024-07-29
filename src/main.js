@@ -19,7 +19,7 @@ import pinia from "@/stores/index";
 import { createPersistedState } from "pinia-persistedstate-plugin";
 
 //路由
-import router from "./router/index";
+import router from "@/router";
 //路由鉴权
 import "./permission";
 

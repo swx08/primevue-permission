@@ -1,7 +1,7 @@
 import request from "../request.js";
 
 //请求前缀
-const api_prefix = "/index";
+const PREFIX = "/index";
 
 //以下列举几种常用的请求方式
 

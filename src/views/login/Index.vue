@@ -11,11 +11,11 @@
                     </div>
                     <div class="content">
                         <FloatLabel>
-                            <InputText id="username" v-model="user.userName" />
+                            <InputText id="username" v-model="user.username" />
                             <label for="username">用户名</label>
                         </FloatLabel>
                         <FloatLabel>
-                            <Password promptLabel="输入密码" weakLabel="轻" mediumLabel="中" strongLabel="强"
+                            <Password @keyup.enter="handlerDoLogin" promptLabel="输入密码" weakLabel="轻" mediumLabel="中" strongLabel="强"
                                 v-model="user.password" toggleMask inputId="password">
                                 <template #footer>
                                     <Divider />
@@ -31,7 +31,7 @@
                         </FloatLabel>
                         <div class="forget">
                             <div style="display: flex;align-items: center;">
-                                <Checkbox v-model="checked" :binary="true" />
+                                <Checkbox v-model="user.checked" :binary="true" />
                                 <span style="cursor: pointer;margin-left: 8px;">记住密码</span>
                             </div>
                             <span style="cursor: pointer;">忘记密码</span>
@@ -53,17 +53,27 @@ import { ref, onMounted } from 'vue';
 import Setting from "@/setting";
 import { useToast } from 'primevue/usetoast';
 const toast = useToast();
+import useUserStore from "@/stores/models/user/user.js";
+import router from "@/router";
 
-
-const checked = ref(false);
+const userStore = useUserStore();
 const user = ref({
-    userName: '',
-    password: ''
+    username: '',
+    password: '',
+    checked: true,
 });
 onMounted(() => { })
 
-const handlerDoLogin = () => {
-    toast.add({ severity: 'success', summary: '登录成功', life: 3000 });
+
+const handlerDoLogin = async () => {
+    try {
+        //进到这里说明已经登录成功
+        await userStore.handlerLogin(user.value);
+        toast.add({ severity: 'success', summary: '登录成功', life: 3000 });
+        router.push({ path: "/" });
+    } catch (error) {
+        toast.add({ severity: 'success', summary: error.message, life: 3000 });
+    }
 }
 </script>
 <style scoped lang='scss'>

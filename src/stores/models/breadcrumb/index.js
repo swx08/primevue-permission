@@ -8,7 +8,7 @@ export const useBreadcrumbStore = defineStore("breadcrumb", () => {
   const breadcrumbs = ref([
     {
       href: "/home",
-      title: "主面板",
+      title: "首页",
       icon: "pi pi-gauge",
       exact: true,
       isActive: (item) => (item.href === route.path ? true : false),
@@ -27,7 +27,7 @@ export const useBreadcrumbStore = defineStore("breadcrumb", () => {
 
     if (breadcrumbIndex !== -1) {
       // 如果找到的是'主面板'，且breadcrumbs长度大于1，则删除之后的所有面包屑
-      if (breadcrumb.title === "主面板" && breadcrumbs.value.length > 1) {
+      if (breadcrumb.title === "首页" && breadcrumbs.value.length > 1) {
         breadcrumbs.value.splice(breadcrumbIndex + 1);
       }
       // 如果不是'主面板'，则直接返回，因为不需要添加重复的面包屑
