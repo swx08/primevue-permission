@@ -12,11 +12,10 @@
 <script setup>
 import { ref } from "vue";
 import { useThemeStore } from "@/stores/models/theme";
-import { useToast } from "primevue/usetoast";
-const toast = useToast();
+import { toast } from 'vue3-toastify';
 
 const show = () => {
-  toast.add({ severity: 'info', summary: 'Info', detail: 'Message Content', life: 3000 });
+  toast.success("我是集成的")
 };
 
 const value = ref("字典管理");

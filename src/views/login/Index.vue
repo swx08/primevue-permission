@@ -51,8 +51,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import Setting from "@/setting";
-import { useToast } from 'primevue/usetoast';
-const toast = useToast();
+import { toast } from "vue3-toastify";
 import useUserStore from "@/stores/models/user/user.js";
 import router from "@/router";
 
@@ -69,7 +68,7 @@ const handlerDoLogin = async () => {
     try {
         //进到这里说明已经登录成功
         await userStore.handlerLogin(user.value);
-        toast.add({ severity: 'success', summary: '登录成功', life: 3000 });
+        toast.success("登录成功！");
         router.push({ path: "/" });
     } catch (error) {
         console.log("登录失败");

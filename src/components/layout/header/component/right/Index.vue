@@ -19,10 +19,8 @@
             </div>
             <Menu ref="menu" id="config_menu" :model="items" popup>
                 <template #item="{ item, props }">
-                    <a v-ripple class="flex items-center" v-bind="props.action" @click="handler(item)">
-                        <span :class="item.icon" />
-                        <span>{{ item.label }}</span>
-                    </a>
+                    <Button class="btn" @click="handler(item)" :icon="item.icon" :label="item.label"
+                        v-bind="props.action" text />
                 </template>
             </Menu>
         </span>
@@ -32,11 +30,13 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRefreshStore } from "@/stores/models/refresh";
-import { useToast } from "primevue/usetoast";
+import { toast } from "vue3-toastify";
 import screenfull from "screenfull";
 import Message from "@/components/common/msg/Index.vue";
+import useUserStore from "@/stores/models/user/user.js";
+import { doLogout } from '@/api/user';
 
-const toast = useToast();
+const userStore = useUserStore();
 const useRefresh = useRefreshStore();
 const menu = ref(null);
 const items = ref([
@@ -54,11 +54,19 @@ const toggle = (event) => {
     menu.value.toggle(event);
 };
 
+//退出登录
 const handler = (item) => {
-    console.log(item)
+    if (item.label === '退出登录') {
+        doLogout().then((res) => {
+            if (res.code === 200) {
+                userStore.logout();
+                toast.success("退出成功！");
+            }
+        })
+    } else {
+        toast.success("个人中心");
+    }
 };
-onMounted(() => { })
-
 // 刷新
 const handleDoRefresh = () => {
     useRefresh.refresh = !useRefresh.refresh;
@@ -88,5 +96,11 @@ const handleChangeScreen = () => {
 .header-right span:nth-last-child(1)>div {
     display: flex;
     align-items: center;
+}
+
+.btn {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
 }
 </style>

@@ -1,6 +1,6 @@
 //对于axios进行二次封装
 import axios from "axios";
-import toast from "@/utils/toast";
+import { toast } from "vue3-toastify";
 import router from "@/router/index";
 import useUserStore from "@/stores/models/user/user.js";
 
@@ -28,11 +28,7 @@ requests.interceptors.response.use(
     const res = response.data;
     const code = res.code;
     if (code !== 200) {
-      toast.add({
-        severity: "error",
-        summary: res.message,
-        life: 3000,
-      });
+      toast.error(res.message);
     }
     if (code === 403) {
       // authorizationStore.removeAuthorization();
