@@ -1,5 +1,5 @@
 <template>
-    <div class="container" :style="{backgroundImage: Setting.loginBgColor}">
+    <div class="container" :style="{ backgroundImage: Setting.loginBgColor }">
         <div class="left">
             <div class="form-container">
                 <div class="form">
@@ -15,18 +15,8 @@
                             <label for="username">用户名</label>
                         </FloatLabel>
                         <FloatLabel>
-                            <Password @keyup.enter="handlerDoLogin" promptLabel="输入密码" weakLabel="轻" mediumLabel="中"
-                                strongLabel="强" v-model="user.password" toggleMask inputId="password">
-                                <template #footer>
-                                    <Divider />
-                                    <ul>
-                                        <li>至少包含一个小写字母</li>
-                                        <li>至少包含一个大写字母</li>
-                                        <li>至少包含一个数字</li>
-                                        <li>至少8位长度</li>
-                                    </ul>
-                                </template>
-                            </Password>
+                            <Password @keyup.enter="handlerDoLogin" promptLabel="密码强度" weakLabel="轻" mediumLabel="中"
+                                strongLabel="强" v-model="user.password" toggleMask inputId="password" />
                             <label for="password">密码</label>
                         </FloatLabel>
                         <div class="forget">
@@ -90,49 +80,49 @@ const handlerDoLogin = async () => {
         width: 30%;
 
         .form-container {
-                height: 100%;
-                width: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
-        
-                .form {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+
+            .form {
+                width: 320px;
+                height: 500px;
+                padding: 20px;
+
+                .title {
+                    font-size: 30px;
+                    font-weight: bold;
+                    text-align: center;
+                }
+
+                .tip {
+                    font-size: 15px;
+                    color: #5c5c5c;
+                    text-align: center;
+                    margin: 35px;
+                }
+
+                .content {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 40px;
+                }
+
+                .input {
                     width: 320px;
-                    height: 500px;
-                    padding: 20px;
-        
-                    .title {
-                        font-size: 30px;
-                        font-weight: bold;
-                        text-align: center;
-                    }
-        
-                    .tip {
-                        font-size: 15px;
-                        color: #5c5c5c;
-                        text-align: center;
-                        margin: 35px;
-                    }
-        
-                    .content {
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        gap: 40px;
-                    }
-        
-                    .input {
-                        width: 320px;
-                        height: 45px;
-                    }
-        
-                    .content .forget {
-                        display: flex;
-                        justify-content: space-between;
-                        width: 320px;
-                    }
+                    height: 45px;
+                }
+
+                .content .forget {
+                    display: flex;
+                    justify-content: space-between;
+                    width: 320px;
                 }
             }
+        }
     }
 
     .right {

@@ -1,191 +1,184 @@
 <template>
   <Card>
     <template #content>
-      <DataTable stripedRows v-model:filters="filters" v-model:selection="selectedCustomers" :value="customers"
-        paginator :rows="8" dataKey="id" filterDisplay="menu"
-        :globalFilterFields="['name', 'country.name', 'representative.name', 'balance', 'status']">
+      <DataTable scrollable scrollHeight="430px" :metaKeySelection="true" selectionMode="single" stripedRows
+        v-model:selection="selecteds" :value="tableData" dataKey="id" :loading="loading">
         <template #header>
-          <div class="flex justify-between">
-            <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()" />
+          <Panel toggleable header="查询">
+            <template #icons>
+              <Button icon="pi pi-cog" severity="secondary" rounded text @click="toggle" />
+              <Menu ref="menu" id="config_menu" :model="items" popup />
+            </template>
+            <div class="panel-container">
+              <div class="panel-left">
+                <FloatLabel>
+                  <InputText class="input" id="username" v-model="searchUser.username" />
+                  <label for="username">用户名</label>
+                </FloatLabel>
+                <FloatLabel>
+                  <InputText class="input" id="phone" v-model="searchUser.phone" />
+                  <label for="phone">手机号</label>
+                </FloatLabel>
+                <FloatLabel>
+                  <Select class="input" v-model="searchUser.status" inputId="dd-city" :options="cities"
+                    optionLabel="name" />
+                  <label for="dd-city">用户状态</label>
+                </FloatLabel>
+              </div>
+              <div class="panel-right">
+                <Button label="查询" outlined size="small" icon="pi pi-search" severity="success" />
+                <Button label="重置" outlined size="small" icon="pi pi-refresh" severity="secondary" />
+                <Button label="批量删除" outlined size="small" icon="pi pi-trash" severity="danger" />
+              </div>
+            </div>
+          </Panel>
+        </template>
+        <template #empty>
+          <div style="text-align: center;">
+            用户数据为空
           </div>
         </template>
-        <template #empty> No customers found. </template>
-        <Column selectionMode="multiple" headerStyle="width: 3rem" frozen></Column>
-        <Column field="name" header="Name" sortable style="min-width: 14rem" frozen>
+        <Column selectionMode="multiple" style="width: 3rem" frozen :exportable="false"></Column>
+        <Column field="id" header="编号" sortable frozen style="min-width: 8rem">
           <template #body="{ data }">
-            {{ data.name }}
-          </template>
-          <template #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="text" placeholder="Search by name" />
+            {{ data.id }}
           </template>
         </Column>
-        <Column header="Country" sortable sortField="country.name" filterField="country.name" style="min-width: 14rem">
+        <Column header="用户名" sortable field="username" style="min-width: 10rem">
           <template #body="{ data }">
-            <div class="flex items-center gap-2">
-              <img alt="flag" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png"
-                :class="`flag flag-${data.country.code}`" style="width: 24px" />
-              <span>{{ data.country.name }}</span>
-            </div>
-          </template>
-          <template #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="text" placeholder="Search by country" />
+            <span>{{ data.username }}</span>
           </template>
         </Column>
-        <Column header="Agent" sortable sortField="representative.name" filterField="representative"
-          :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
+        <Column header="手机号" field="phone" sortable style="min-width: 12rem">
           <template #body="{ data }">
-            <div class="flex items-center gap-2">
-              <img :alt="data.representative.name"
-                :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.representative.image}`"
-                style="width: 32px" />
-              <span>{{ data.representative.name }}</span>
-            </div>
-          </template>
-          <template #filter="{ filterModel }">
-            <MultiSelect v-model="filterModel.value" :options="representatives" optionLabel="name" placeholder="Any">
-              <template #option="slotProps">
-                <div class="flex items-center gap-2">
-                  <img :alt="slotProps.option.name"
-                    :src="`https://primefaces.org/cdn/primevue/images/avatar/${slotProps.option.image}`"
-                    style="width: 32px" />
-                  <span>{{ slotProps.option.name }}</span>
-                </div>
-              </template>
-            </MultiSelect>
+            <span>{{ data.phone }}</span>
           </template>
         </Column>
-        <Column field="date" header="Date" sortable filterField="date" dataType="date" style="min-width: 10rem">
+        <Column field="email" header="邮箱" sortable style="min-width: 15rem">
           <template #body="{ data }">
-            {{ formatDate(data.date) }}
-          </template>
-          <template #filter="{ filterModel }">
-            <DatePicker v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" />
+            {{ data.email }}
           </template>
         </Column>
-        <Column field="balance" header="Balance" sortable filterField="balance" dataType="numeric"
-          style="min-width: 10rem">
+        <Column header="状态" field="status" style="min-width: 8rem">
           <template #body="{ data }">
-            {{ formatCurrency(data.balance) }}
-          </template>
-          <template #filter="{ filterModel }">
-            <InputNumber v-model="filterModel.value" mode="currency" currency="USD" locale="en-US" />
+            <ToggleSwitch v-model="data.checked" />
           </template>
         </Column>
-        <Column header="Status" field="status" sortable :filterMenuStyle="{ width: '14rem' }" style="min-width: 12rem">
+        <Column field="createTime" sortable header="创建时间" style="min-width: 15rem">
           <template #body="{ data }">
-            <Tag :value="data.status" :severity="getSeverity(data.status)" />
-          </template>
-          <template #filter="{ filterModel }">
-            <Select v-model="filterModel.value" :options="statuses" placeholder="Select One" showClear>
-              <template #option="slotProps">
-                <Tag :value="slotProps.option" :severity="getSeverity(slotProps.option)" />
-              </template>
-            </Select>
+            {{ data.createTime }}
           </template>
         </Column>
-        <Column field="activity" header="Activity" sortable :showFilterMatchModes="false" style="min-width: 12rem"
-          alignFrozen="right">
-          <template #body="{ data }">
-            <ProgressBar :value="data.activity" :showValue="false" style="height: 6px"></ProgressBar>
-          </template>
-          <template #filter="{ filterModel }">
-            <Slider v-model="filterModel.value" range class="m-4"></Slider>
-            <div class="flex items-center justify-between px-2">
-              <span>{{ filterModel.value ? filterModel.value[0] : 0 }}</span>
-              <span>{{ filterModel.value ? filterModel.value[1] : 100 }}</span>
-            </div>
-          </template>
-        </Column>
-        <Column headerStyle="width: 5rem; text-align: center" bodyStyle="text-align: center; overflow: visible">
+        <Column :exportable="false" style="min-width: 15rem" frozen>
           <template #body>
-            <Button type="button" icon="pi pi-cog" rounded />
+            <div style="display: flex;justify-content: space-evenly;">
+              <Button icon="pi pi-pencil" outlined rounded />
+              <Button icon="pi pi-trash" outlined rounded severity="danger" />
+              <Button icon="pi pi-ellipsis-h" outlined rounded severity="info" />
+            </div>
           </template>
         </Column>
       </DataTable>
+
+      <!-- 分页 -->
+      <Paginator @page="handlePaginationChange" :rows="pageSize" :totalRecords="total"
+        :rowsPerPageOptions="[10, 20, 30, 40]"></Paginator>
     </template>
   </Card>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-// import { CustomerService } from '@/service/CustomerService';
-import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
-import { userData } from '@/assets/data/userData';
+import { findUserList } from "@/api/user";
 
-const customers = ref();
-const selectedCustomers = ref();
-const filters = ref();
-const representatives = ref([
-  { name: 'Amy Elsner', image: 'amyelsner.png' },
-  { name: 'Anna Fali', image: 'annafali.png' },
-  { name: 'Asiya Javayant', image: 'asiyajavayant.png' },
-  { name: 'Bernardo Dominic', image: 'bernardodominic.png' },
-  { name: 'Elwin Sharvill', image: 'elwinsharvill.png' },
-  { name: 'Ioni Bowcher', image: 'ionibowcher.png' },
-  { name: 'Ivan Magalhaes', image: 'ivanmagalhaes.png' },
-  { name: 'Onyama Limba', image: 'onyamalimba.png' },
-  { name: 'Stephen Shaw', image: 'stephenshaw.png' },
-  { name: 'XuXue Feng', image: 'xuxuefeng.png' }
+const menu = ref(null);
+const loading = ref(true);
+const tableData = ref([]);
+const pageNo = ref(1);
+const pageSize = ref(10);
+const total = ref(0);
+const searchUser = ref({
+  username: '',
+  phone: '',
+  status: null
+});
+const cities = ref([
+  { name: 'New York', code: 'NY' },
+  { name: 'Rome', code: 'RM' },
+  { name: 'London', code: 'LDN' },
+  { name: 'Istanbul', code: 'IST' },
+  { name: 'Paris', code: 'PRS' }
 ]);
-const statuses = ref(['unqualified', 'qualified', 'new', 'negotiation', 'renewal', 'proposal']);
+
+const items = ref([
+  {
+    label: '导入',
+    icon: 'pi pi-file-import'
+  },
+  {
+    label: '导出',
+    icon: 'pi pi-file-export'
+  },
+]);
+const selecteds = ref([]);
 
 onMounted(() => {
-  customers.value = getCustomers(userData);
+  getUserList();
 });
 
-
-const initFilters = () => {
-  filters.value = {
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-    'country.name': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-    representative: { value: null, matchMode: FilterMatchMode.IN },
-    date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
-    balance: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
-    status: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
-    activity: { value: [0, 100], matchMode: FilterMatchMode.BETWEEN },
-    verified: { value: null, matchMode: FilterMatchMode.EQUALS }
-  };
-};
-
-initFilters();
-
-const formatDate = (value) => {
-  return value.toLocaleDateString('en-US', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
+//获取用户分页数据
+const getUserList = () => {
+  findUserList(pageNo.value, pageSize.value, searchUser.value).then((res) => {
+    if (res.code === 200 && res.data !== null) {
+      tableData.value = res.data.data;
+      total.value = res.data.total;
+      loading.value = false;
+    } else {
+      loading.value = false;
+    }
   });
 };
-const formatCurrency = (value) => {
-  return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-};
-const clearFilter = () => {
-  initFilters();
-};
-const getCustomers = (data) => {
-  return [...(data || [])].map((d) => {
-    d.date = new Date(d.date);
 
-    return d;
-  });
-};
-const getSeverity = (status) => {
-  switch (status) {
-    case 'unqualified':
-      return 'danger';
+//监听分页变化
+const handlePaginationChange = (event) => {
+  pageNo.value = event.page + 1;
+  pageSize.value = event.rows;
+  getUserList();
+}
 
-    case 'qualified':
-      return 'success';
-
-    case 'new':
-      return 'info';
-
-    case 'negotiation':
-      return 'warn';
-
-    case 'renewal':
-      return null;
-  }
+const toggle = (event) => {
+  menu.value.toggle(event);
 };
 </script>
+
+<style lang="scss" scoped>
+.panel-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.panel-left {
+  width: 66%;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panel-left .input {
+  width: 210px;
+  height: 33px;
+}
+
+.panel-right {
+  width: 26%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+:deep(.p-datatable-header){
+  padding: 0 0 16px 0;
+}
+</style>

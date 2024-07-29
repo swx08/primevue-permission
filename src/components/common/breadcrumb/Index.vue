@@ -17,3 +17,9 @@ import Button from "primevue/button";
 
 const breadcrumbStore = useBreadcrumbStore();
 </script>
+
+<style scoped lang='scss'>
+.p-breadcrumb{
+    padding: 5px;
+}
+</style>
