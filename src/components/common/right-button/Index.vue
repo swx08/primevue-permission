@@ -69,8 +69,6 @@ const toggleColorScheme = () => {
 // 切换主题
 const handlerTheme = (theme) => {
     themeStore.setTheme(theme);
-    //刷新
-    location.reload();
 }
 
 // 切换布局模式

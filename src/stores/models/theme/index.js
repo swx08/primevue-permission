@@ -44,6 +44,8 @@ export const useThemeStore = defineStore("theme", () => {
     } else if (item === "nora") {
       theme.value = 2;
     }
+    //刷新
+    location.reload();
   };
 
   // 返回 token 变量

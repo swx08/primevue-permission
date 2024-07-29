@@ -15,8 +15,8 @@
                             <label for="username">用户名</label>
                         </FloatLabel>
                         <FloatLabel>
-                            <Password @keyup.enter="handlerDoLogin" promptLabel="输入密码" weakLabel="轻" mediumLabel="中" strongLabel="强"
-                                v-model="user.password" toggleMask inputId="password">
+                            <Password @keyup.enter="handlerDoLogin" promptLabel="输入密码" weakLabel="轻" mediumLabel="中"
+                                strongLabel="强" v-model="user.password" toggleMask inputId="password">
                                 <template #footer>
                                     <Divider />
                                     <ul>
@@ -37,7 +37,8 @@
                             <span style="cursor: pointer;">忘记密码</span>
                         </div>
                         <Toast />
-                        <Button class="input" @click="handlerDoLogin" label="立即登录" severity="success" />
+                        <Button :loading="loading" class="input" @click="handlerDoLogin" label="立即登录"
+                            severity="success" />
                     </div>
                 </div>
             </div>
@@ -55,6 +56,7 @@ import { toast } from "vue3-toastify";
 import useUserStore from "@/stores/models/user/user.js";
 import router from "@/router";
 
+const loading = ref(false);
 const userStore = useUserStore();
 const user = ref({
     username: '',
@@ -65,9 +67,11 @@ onMounted(() => { })
 
 
 const handlerDoLogin = async () => {
+    loading.value = true;
     try {
         //进到这里说明已经登录成功
         await userStore.handlerLogin(user.value);
+        loading.value = false;
         toast.success("登录成功！");
         router.push({ path: "/" });
     } catch (error) {
