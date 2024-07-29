@@ -7,7 +7,7 @@
         </Button>
     </div>
 
-    <Drawer style="width: 340px;" v-model:visible="visibleRight" position="right" :showCloseIcon="false">
+    <Drawer style="width: 360px;" v-model:visible="visibleRight" position="right" :showCloseIcon="false">
         <div class="drawer-container">
             <div>
                 <span>暗黑模式</span>
@@ -101,19 +101,19 @@ const handlerChangeMenuBgColor = (color) => {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    height: 80vh;
+    height: 100vh;
 }
 
 .drawer-container>div:nth-child(1) {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    flex: 2;
+    flex: 1;
 }
 
 .drawer-container>div:nth-child(2) {
     width: 100%;
-    flex: 4;
+    flex: 2;
 }
 
 .drawer-container>div:nth-child(2)>div {
@@ -125,7 +125,7 @@ const handlerChangeMenuBgColor = (color) => {
 
 .drawer-container>div:nth-child(3) {
     width: 100%;
-    flex: 6;
+    flex: 2
 }
 
 .drawer-container>div:nth-child(3)>div {

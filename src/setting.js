@@ -6,4 +6,6 @@ export default {
 
   // 是否隐藏Logo
   logoHidden: true,
+  // 登录页背景图
+  loginBgColor: "linear-gradient(270deg, #5f5595, #9084b4, #c0b7d4, #f2ecf4)",
 };

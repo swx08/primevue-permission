@@ -28,6 +28,12 @@ export const useThemeStore = defineStore("theme", () => {
     "#1F3A5F",
     "#24613b",
     "#5e3b00",
+    "#022c22",
+    "#450a0a",
+    "#042f2e",
+    "#082f49",
+    "#172554",
+    "#1e1b4b",
   ]);
 
   const setTheme = (item) => {
@@ -48,6 +54,6 @@ export const useThemeStore = defineStore("theme", () => {
     isSimple,
     currentMenuBgColor,
     simpleMenuColor,
-    businessMenuColor
+    businessMenuColor,
   };
 });
