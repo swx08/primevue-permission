@@ -45,12 +45,14 @@ const handlerOneChild = (tempItem) => {
     const hasOneChild = tempItem.filter((item) => item.children.length === 1);
     //一个子菜单处理
     hasOneChild.forEach((menuItem) => {
-        oneChild.push({
-            href: menuItem.children[0].path,
-            title: menuItem.children[0].meta.title,
-            icon: `pi ${menuItem.children[0].meta.icon}`,
-            isActive: (item) => item.href === route.path ? true : false
-        })
+        if (!menuItem.children[0].meta.hidden) {
+            oneChild.push({
+                href: menuItem.children[0].path,
+                title: menuItem.children[0].meta.title,
+                icon: `pi ${menuItem.children[0].meta.icon}`,
+                isActive: (item) => item.href === route.path ? true : false
+            })
+        }
     });
 
     return oneChild;
@@ -70,75 +72,20 @@ const handlerMoreChild = (tempItem) => {
         tempMenu.title = menu.meta.title;
         tempMenu.icon = `pi ${menu.meta.icon}`;
         menu.children.forEach((menuItem) => {
-            tempMenu.child.push({
-                href: menuItem.path,
-                title: menuItem.meta.title,
-                icon: `pi ${menuItem.meta.icon}`,
-                isActive: (item) => item.href === route.path ? true : false
-            })
+            if (!menuItem.meta.hidden) {
+                tempMenu.child.push({
+                    href: menuItem.path,
+                    title: menuItem.meta.title,
+                    icon: `pi ${menuItem.meta.icon}`,
+                    isActive: (item) => item.href === route.path ? true : false
+                })
+            }
         });
         moreChild.push(tempMenu);
     });
 
     return moreChild;
 }
-
-const items = ref([
-    {
-        href: '/home',
-        title: '主面板',
-        icon: 'pi pi-gauge',
-        isActive: (item) => item.href === route.path ? true : false
-    },
-    {
-        title: '系统管理',
-        icon: 'pi pi-cog',
-        child: [
-            {
-                href: '/system/notice',
-                title: '公告管理',
-                icon: 'pi pi-envelope',
-                isActive: (item) => item.href === route.path ? true : false
-            },
-            {
-                href: '/system/dict',
-                title: '字典管理',
-                icon: 'pi pi-box',
-                isActive: (item) => item.href === route.path ? true : false
-            }
-        ]
-    },
-    {
-        title: '权限管理',
-        icon: 'pi pi-lock',
-        child: [
-            {
-                href: '/permission/user',
-                title: '用户管理',
-                icon: 'pi pi-user',
-                isActive: (item) => item.href === route.path ? true : false
-            },
-            {
-                href: '/permission/role',
-                title: '角色管理',
-                icon: 'pi pi-box',
-                isActive: (item) => item.href === route.path ? true : false
-            },
-            {
-                href: '/permission/menu',
-                title: '菜单管理',
-                icon: 'pi pi-box',
-                isActive: (item) => item.href === route.path ? true : false
-            }
-        ]
-    },
-    {
-        href: '/404',
-        title: '404',
-        icon: 'pi pi-arrow-circle-left',
-        isActive: (item) => item.href === route.path ? true : false
-    },
-]);
 
 //添加路由面包屑
 const handlerClick = (event, item) => {
