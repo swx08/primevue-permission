@@ -34,7 +34,7 @@ export const useBreadcrumbStore = defineStore("breadcrumb", () => {
       return;
     }
 
-    if (breadcrumbs.value.length <= 6) {
+    if (breadcrumbs.value.length <= 5) {
       // 如果breadcrumbs长度小于6，则直接添加到breadcrumbs中
       breadcrumbs.value.push(breadcrumb);
     }
