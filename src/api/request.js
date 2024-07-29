@@ -1,10 +1,10 @@
 //对于axios进行二次封装
 import axios from "axios";
-// import { useToast } from "primevue/usetoast";
+import toast from "@/utils/toast";
 import router from "@/router/index";
 import useUserStore from "@/stores/models/user/user.js";
 
-// const toast = useToast();
+
 //配置通用的基础路径和超时时间
 const requests = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_API,
@@ -28,11 +28,11 @@ requests.interceptors.response.use(
     const res = response.data;
     const code = res.code;
     if (code !== 200) {
-      // toast.add({
-      //   severity: "error",
-      //   summary: res.message,
-      //   life: 3000,
-      // });
+      toast.add({
+        severity: "error",
+        summary: res.message,
+        life: 3000,
+      });
     }
     if (code === 403) {
       // authorizationStore.removeAuthorization();

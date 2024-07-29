@@ -72,7 +72,7 @@ const handlerDoLogin = async () => {
         toast.add({ severity: 'success', summary: '登录成功', life: 3000 });
         router.push({ path: "/" });
     } catch (error) {
-        toast.add({ severity: 'success', summary: error.message, life: 3000 });
+        console.log("登录失败");
     }
 }
 </script>
