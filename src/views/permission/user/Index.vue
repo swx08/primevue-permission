@@ -1,8 +1,8 @@
 <template>
   <Card>
     <template #content>
-      <DataTable scrollable scrollHeight="430px" :metaKeySelection="true" selectionMode="single" stripedRows
-        v-model:selection="selecteds" :value="tableData" dataKey="id" :loading="loading">
+      <DataTable scrollable scrollHeight="430px" stripedRows v-model:selection="selecteds" :value="tableData"
+        dataKey="id" :loading="loading">
         <template #header>
           <Panel toggleable header="查询">
             <template #icons>
@@ -30,7 +30,8 @@
                   :loading="saveLoading" />
                 <Button @click="handleReset" label="重置" outlined size="small" icon="pi pi-refresh"
                   severity="secondary" />
-                <Button label="批量删除" outlined size="small" icon="pi pi-trash" severity="danger" />
+                <Button :disabled="!selecteds || !selecteds.length" label="批量删除" outlined size="small"
+                  icon="pi pi-trash" severity="danger" @click="deleteDialog" />
               </div>
             </div>
           </Panel>
@@ -72,10 +73,11 @@
           </template>
         </Column>
         <Column :exportable="false" style="min-width: 15rem" frozen>
-          <template #body>
+          <template #body="{data}">
+            <ConfirmPopup></ConfirmPopup>
             <div style="display: flex;justify-content: space-evenly;">
               <Button icon="pi pi-pencil" outlined rounded />
-              <Button icon="pi pi-trash" outlined rounded severity="danger" />
+              <Button @click="confirmDeleteUser(data.id)" icon="pi pi-trash" outlined rounded severity="danger" />
               <Button icon="pi pi-ellipsis-h" outlined rounded severity="info" />
             </div>
           </template>
@@ -88,13 +90,38 @@
       </Paginator>
     </template>
   </Card>
+
+  <!-- 批量删除用户弹框 -->
+  <Dialog v-model:visible="deleteUsersDialog" :style="{ width: '450px' }" header="用户删除" :modal="true">
+    <div>
+      <i class="pi pi-exclamation-triangle" style="color: red;margin: 0 20px" />
+      <span>确认删除用户数据 ? </span>
+    </div>
+    <template #footer>
+      <Button label="取消" outlined size="small" icon="pi pi-times" text @click="cancelDelete" />
+      <Button label="确认" severity="danger" outlined size="small" icon="pi pi-check" text @click="handlerBatchDelete" />
+    </template>
+  </Dialog>
+
+  <!-- 删除用户弹框 -->
+  <Dialog v-model:visible="deleteUserDialog" :style="{ width: '450px' }" header="用户删除" :modal="true">
+    <div>
+      <i class="pi pi-exclamation-triangle" style="color: red;margin: 0 20px" />
+      <span>确认删除用户数据 ? </span>
+    </div>
+    <template #footer>
+      <Button label="取消" outlined size="small" icon="pi pi-times" text @click="cancelDelete" />
+      <Button label="确认" severity="danger" outlined size="small" icon="pi pi-check" text @click="handlerDelete" />
+    </template>
+  </Dialog>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { findUserList } from "@/api/user";
+import { findUserList, batchDelete, deleteUser } from "@/api/user";
 import { USER_CONSTANT } from "@/constant/dictType.js";
 import { queryDictLabel } from "@/api/dict_data";
+import { toast } from 'vue3-toastify';
 
 const statusData = ref([]);
 const menu = ref(null);
@@ -120,6 +147,9 @@ const optionItems = ref([
   },
 ]);
 const selecteds = ref([]);
+const deleteUsersDialog = ref(false);
+const deleteUserDialog = ref(false);
+const userId = ref(null);
 
 onMounted(() => {
   getUserList();
@@ -176,9 +206,51 @@ const handleSearch = () => {
   }
 }
 
+//添加菜单数据
 const toggle = (event) => {
   menu.value.toggle(event);
 };
+
+const deleteDialog = () => {
+  deleteUsersDialog.value = true;
+}
+
+// 批量删除用户
+const handlerBatchDelete = () => {
+  if (selecteds.value.length > 0) {
+    //过滤出用户id
+    const userIdList = selecteds.value.map((item) => item.id);
+    batchDelete(userIdList).then((res) => {
+      if (res.code === 200) {
+        toast.success("删除成功！");
+        getUserList();
+        deleteUsersDialog.value = false;
+      }
+    })
+  }
+}
+
+//取消删除用户
+const cancelDelete = () => {
+  deleteUsersDialog.value = false;
+  deleteUserDialog.value = false;
+}
+
+//删除用户
+const confirmDeleteUser = (id) => {
+  deleteUserDialog.value = true;
+  userId.value = id;
+}
+
+const handlerDelete = () => {
+  deleteUser(userId.value).then((res) => {
+    if (res.code === 200) {
+      toast.success("删除成功！");
+      getUserList();
+      deleteUserDialog.value = false;
+    }
+  })
+}
 </script>
 
 <style lang="scss" scoped>

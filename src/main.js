@@ -12,6 +12,7 @@ import Lara from "@primevue/themes/lara";
 import Nora from "@primevue/themes/nora";
 import ToastService from "primevue/toastservice";
 import Tooltip from "primevue/tooltip";
+import ConfirmationService from "primevue/confirmationservice";
 
 //弹窗提示插件
 import Vue3Toasity from "vue3-toastify";
@@ -62,6 +63,7 @@ app.use(PrimeVue, {
 
 app.directive("tooltip", Tooltip);
 app.use(ToastService);
+app.use(ConfirmationService);
 
 app.use(router);
 
