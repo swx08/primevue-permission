@@ -72,16 +72,23 @@
             {{ data.createTime }}
           </template>
         </Column>
-        <Column :exportable="false" header="操作" style="min-width: 12rem" frozen>
+        <Column header="操作" style="min-width: 12rem" frozen>
           <template #body="{data}">
             <ConfirmPopup></ConfirmPopup>
             <div>
               <Button v-permission="`permission:user:update`" icon="pi pi-pencil" outlined rounded />
               <Button v-permission="`permission:user:delete`" @click="confirmDeleteUser(data.id)" icon="pi pi-trash"
                 outlined rounded severity="danger" style="margin: 0 10px;" />
-              <Button v-permission="`permission:user:more`" icon="pi  pi-ellipsis-h" @click="moreToggle" outlined
+              <Button v-permission="`permission:user:more`" icon="pi  pi-ellipsis-h" @click="moreToggle($event,data.id)" outlined
                 rounded severity="info" />
-              <Menu ref="moreMenu" id="config_menu" :model="moreItems" popup />
+              <Menu ref="moreMenu" id="config_menu" :model="moreItems" popup>
+                <template #item="{ item, props }">
+                  <a @click="handlerMoreOption(item)" v-bind="props.action">
+                    <span :class="item.icon" />
+                    <span>{{ item.label }}</span>
+                  </a>
+                </template>
+              </Menu>
             </div>
           </template>
         </Column>
@@ -95,10 +102,10 @@
   </Card>
 
   <!-- 批量删除用户弹框 -->
-  <Dialog v-model:visible="deleteUsersDialog" :style="{ width: '400px' }" header="用户删除" :modal="true">
+  <Dialog :closable="false" v-model:visible="deleteUsersDialog" :style="{ width: '450px' }" header="用户删除" :modal="true">
     <div>
-      <i class="pi pi-exclamation-triangle" style="color: red;margin: 0 20px" />
-      <span>确认删除用户数据 ? </span>
+      <i class="pi pi-exclamation-triangle icon" />
+      <span>您确认要删除用户数据 ? </span>
     </div>
     <template #footer>
       <Button label="取消" outlined size="small" icon="pi pi-times" text @click="cancelDelete" />
@@ -107,10 +114,10 @@
   </Dialog>
 
   <!-- 删除用户弹框 -->
-  <Dialog v-model:visible="deleteUserDialog" :style="{ width: '400px' }" header="用户删除" :modal="true">
+  <Dialog :closable="false" v-model:visible="deleteUserDialog" :style="{ width: '450px' }" header="用户删除" :modal="true">
     <div>
-      <i class="pi pi-exclamation-triangle" style="color: red;margin: 0 20px" />
-      <span>确认删除用户数据 ? </span>
+      <i class="pi pi-exclamation-triangle icon" />
+      <span>您确认要删除用户数据 ? </span>
     </div>
     <template #footer>
       <Button label="取消" outlined size="small" icon="pi pi-times" text @click="cancelDelete" />
@@ -119,24 +126,24 @@
   </Dialog>
 
   <!-- 重置密码 -->
-  <Dialog v-model:visible="resetPwdDialog" :style="{ width: '400px' }" header="重置密码" :modal="true">
-    <div>
+  <Dialog :closable="false" v-model:visible="resetPwdDialog" :style="{ width: '450px' }" header="重置密码" :modal="true">
+    <div style="display: flex;justify-content: center;align-items: center">
       <FloatLabel>
-        <Password promptLabel="密码强度" weakLabel="轻" mediumLabel="中" strongLabel="强" v-model="newPassword" toggleMask
+        <Password promptLabel="密码强度" weakLabel="轻" mediumLabel="中" strongLabel="强" v-model="resetUserObj.password" toggleMask
           inputId="password" />
         <label for="password">密码</label>
       </FloatLabel>
     </div>
     <template #footer>
       <Button label="取消" severity="info" outlined size="small" icon="pi pi-times" text @click="cancelDelete" />
-      <Button label="确认" severity="success" outlined size="small" icon="pi pi-check" text @click="handlerDelete" />
+      <Button label="确认" severity="success" outlined size="small" icon="pi pi-check" text @click="handleResetPwd" />
     </template>
   </Dialog>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { findUserList, batchDelete, deleteUser, updateUserStatus } from "@/api/user";
+import { findUserList, batchDelete, deleteUser, updateUserStatus, resetPwd } from "@/api/user";
 import { USER_CONSTANT } from "@/constant/dictType.js";
 import { queryDictLabel } from "@/api/dict_data";
 import { toast } from 'vue3-toastify';
@@ -172,17 +179,11 @@ const optionItems = ref([
 const moreItems = ref([
   {
     label: '重置密码',
-    icon: 'pi pi-lock',
-    command: () => {
-      toast.success("我是重置密码的提示信息")
-    }
+    icon: 'pi pi-lock'
   },
   {
     label: '分配角色',
-    icon: 'pi pi-key',
-    command: () => {
-      toast.success("我是分配角色的提示信息")
-    }
+    icon: 'pi pi-key'
   },
 ]);
 const selecteds = ref([]);
@@ -190,7 +191,12 @@ const deleteUsersDialog = ref(false);
 const deleteUserDialog = ref(false);
 const resetPwdDialog = ref(false);
 const userId = ref(null);
-const newPassword = ref('');
+const resetUserObj = ref(
+  {
+    id: null,
+    password: ''
+  }
+);
 
 onMounted(() => {
   getUserList();
@@ -252,9 +258,31 @@ const toggle = (event) => {
   menu.value.toggle(event);
 };
 
-const moreToggle = (event) => {
+const moreToggle = (event, id) => {
+  resetUserObj.value.id = id;
   moreMenu.value.toggle(event);
 };
+
+//更多操作（重置密码、分配角色）
+const handlerMoreOption = (item) => {
+  if (item.label === '重置密码') {
+    resetPwdDialog.value = true;
+  } else if (item.label === '分配角色') {
+    console.log("分配角色");
+  }
+}
+
+//重置密码
+const handleResetPwd = () => {
+  resetPwd(resetUserObj.value).then((res) => {
+    if (res.code === 200) {
+      toast.success("密码重置成功！");
+      resetPwdDialog.value = false;
+      resetUserObj.value.id = null;
+      resetUserObj.value.password = '';
+    }
+  })
+}
 
 //修改用户状态
 const handleChangeStatus = (id) => {
@@ -288,6 +316,9 @@ const handlerBatchDelete = () => {
 const cancelDelete = () => {
   deleteUsersDialog.value = false;
   deleteUserDialog.value = false;
+  resetPwdDialog.value = false;
+  resetUserObj.value.id = null;
+  resetUserObj.value.password = '';
 }
 
 //删除用户
@@ -343,5 +374,11 @@ const handlerDelete = () => {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.icon{
+  color: red;
+  margin: 0 10px;
+  font-size: 1.5rem;
 }
 </style>
