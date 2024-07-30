@@ -169,7 +169,7 @@
               <Button
                 v-permission="`permission:user:more`"
                 icon="pi  pi-ellipsis-h"
-                @click="moreToggle($event, data.id)"
+                @click="moreToggle($event, data)"
                 outlined
                 rounded
                 severity="info"
@@ -209,7 +209,13 @@
       <div class="form-header">
         <div class="header">
           <span>{{ user.id === null ? "新增用户" : "修改用户" }}</span>
-          <Button @click="cancelDelete" icon="pi pi-times" rounded severity="secondary" text />
+          <Button
+            @click="cancelDelete"
+            icon="pi pi-times"
+            rounded
+            severity="secondary"
+            text
+          />
         </div>
       </div>
     </template>
@@ -340,7 +346,13 @@
       <div class="form-header">
         <div class="header">
           <span>重置密码</span>
-          <Button @click="cancelDelete" icon="pi pi-times" rounded severity="secondary" text />
+          <Button
+            @click="cancelDelete"
+            icon="pi pi-times"
+            rounded
+            severity="secondary"
+            text
+          />
         </div>
       </div>
     </template>
@@ -366,6 +378,49 @@
       </div>
     </template>
   </Dialog>
+
+  <!-- 分配角色 -->
+  <Drawer v-model:visible="visibleRight" style="width: 360px" position="right">
+    <template #header>
+      <div class="header">
+        <span>用户分配角色</span>
+      </div>
+    </template>
+
+    <template #default>
+      <div class="role-container">
+        <Message>
+          <template #icon>
+            <span class="pi pi-user"></span>
+          </template>
+          <span style="margin-left: 10px">
+            {{ tempUserName }}
+          </span>
+        </Message>
+        <Message>
+          <label>角色列表</label>
+          <div class="role-content">
+            <div v-for="(role, index) in roleList" :key="index">
+              <Checkbox
+                v-model="selectedRoleList"
+                :inputId="index"
+                name="role"
+                :value="role"
+              />
+              <label style="margin-left: 10px" :for="index">{{ role }}</label>
+            </div>
+          </div>
+        </Message>
+        <Button
+          size="small"
+          severity="success"
+          @click="handlerSaveRoleList"
+          label="确认"
+          style="width: 100%"
+        />
+      </div>
+    </template>
+  </Drawer>
 </template>
 
 <script setup>
@@ -379,7 +434,10 @@ import {
   register,
   queryEchoUserInfo,
   updateUserInfo,
+  saveRoles,
+  queryRoles
 } from "@/api/user";
+import { queryRoleList } from "@/api/role";
 import { USER_CONSTANT } from "@/constant/dictType.js";
 import { queryDictLabel } from "@/api/dict_data";
 import { toast } from "vue3-toastify";
@@ -430,6 +488,7 @@ const deleteUsersDialog = ref(false);
 const deleteUserDialog = ref(false);
 const resetPwdDialog = ref(false);
 const addOrEditUserDialog = ref(false);
+const visibleRight = ref(false);
 const userId = ref(null);
 const resetUserObj = ref({
   id: null,
@@ -448,9 +507,13 @@ const validate = ref({
   email: "",
   password: "",
 });
+const selectedRoleList = ref([]);
+const roleList = ref([]);
+const tempUserName = ref("");
 
 onMounted(() => {
   getUserList();
+  getAllRoleList();
   getDictTypeStatus();
 });
 
@@ -465,6 +528,26 @@ const getUserList = () => {
       loading.value = false;
       tableData.value = [];
       total.value = 0;
+    }
+  });
+};
+
+//获取所有角色数据
+const getAllRoleList = () => {
+  queryRoleList().then((res) => {
+    if (res.code === 200) {
+      roleList.value = res.data;
+    }
+  });
+};
+
+//保存用户角色
+const handlerSaveRoleList = () => {
+  saveRoles(tempUserName.value, selectedRoleList.value).then((res) => {
+    if (res.code === 200) {
+      toast.success("角色分配成功！");
+      visibleRight.value = false;
+      selectedRoleList.value = [];
     }
   });
 };
@@ -513,9 +596,15 @@ const toggle = (event) => {
   menu.value.toggle(event);
 };
 
-const moreToggle = (event, id) => {
-  resetUserObj.value.id = id;
+const moreToggle = (event, data) => {
   moreMenu.value.toggle(event);
+  tempUserName.value = data.username;
+  resetUserObj.value.id = data.id;
+  queryRoles(data.id).then((res) => {
+    if (res.code === 200) {
+      selectedRoleList.value = res.data;
+    }
+  })
 };
 
 //更多操作（重置密码、分配角色）
@@ -523,7 +612,7 @@ const handlerMoreOption = (item) => {
   if (item.label === "重置密码") {
     resetPwdDialog.value = true;
   } else if (item.label === "分配角色") {
-    console.log("分配角色");
+    visibleRight.value = true;
   }
 };
 
@@ -773,5 +862,24 @@ const handlerDelete = () => {
 #small-help {
   color: red;
   font-size: 12px;
+}
+
+.role-container {
+  height: 60vh;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+.role-content {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.role-content > div {
+  display: flex;
+  margin: 0 30px 20px 0;
 }
 </style>
