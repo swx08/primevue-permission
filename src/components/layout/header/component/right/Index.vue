@@ -17,12 +17,7 @@
                 </Button>
                 <span>Admin</span>
             </div>
-            <Menu ref="menu" id="config_menu" :model="items" popup>
-                <template #item="{ item, props }">
-                    <Button class="btn" @click="handler(item)" :icon="item.icon" :label="item.label"
-                        v-bind="props.action" text />
-                </template>
-            </Menu>
+            <Menu ref="menu" id="config_menu" :model="items" popup />
         </span>
     </div>
 </template>
@@ -42,30 +37,27 @@ const menu = ref(null);
 const items = ref([
     {
         label: '个人中心',
-        icon: 'pi pi-user'
+        icon: 'pi pi-user',
+        command: () => {
+            toast.success("个人中心");
+        }
     },
     {
         label: '退出登录',
-        icon: 'pi pi-power-off'
+        icon: 'pi pi-power-off',
+        command: () => {
+            doLogout().then((res) => {
+                if (res.code === 200) {
+                    userStore.logout();
+                    toast.success("退出成功！");
+                }
+            })
+        }
     }
 ]);
 
 const toggle = (event) => {
     menu.value.toggle(event);
-};
-
-//退出登录
-const handler = (item) => {
-    if (item.label === '退出登录') {
-        doLogout().then((res) => {
-            if (res.code === 200) {
-                userStore.logout();
-                toast.success("退出成功！");
-            }
-        })
-    } else {
-        toast.success("个人中心");
-    }
 };
 // 刷新
 const handleDoRefresh = () => {

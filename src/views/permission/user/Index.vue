@@ -95,7 +95,7 @@
   </Card>
 
   <!-- 批量删除用户弹框 -->
-  <Dialog v-model:visible="deleteUsersDialog" :style="{ width: '450px' }" header="用户删除" :modal="true">
+  <Dialog v-model:visible="deleteUsersDialog" :style="{ width: '400px' }" header="用户删除" :modal="true">
     <div>
       <i class="pi pi-exclamation-triangle" style="color: red;margin: 0 20px" />
       <span>确认删除用户数据 ? </span>
@@ -107,7 +107,7 @@
   </Dialog>
 
   <!-- 删除用户弹框 -->
-  <Dialog v-model:visible="deleteUserDialog" :style="{ width: '450px' }" header="用户删除" :modal="true">
+  <Dialog v-model:visible="deleteUserDialog" :style="{ width: '400px' }" header="用户删除" :modal="true">
     <div>
       <i class="pi pi-exclamation-triangle" style="color: red;margin: 0 20px" />
       <span>确认删除用户数据 ? </span>
@@ -115,6 +115,21 @@
     <template #footer>
       <Button label="取消" outlined size="small" icon="pi pi-times" text @click="cancelDelete" />
       <Button label="确认" severity="danger" outlined size="small" icon="pi pi-check" text @click="handlerDelete" />
+    </template>
+  </Dialog>
+
+  <!-- 重置密码 -->
+  <Dialog v-model:visible="resetPwdDialog" :style="{ width: '400px' }" header="重置密码" :modal="true">
+    <div>
+      <FloatLabel>
+        <Password promptLabel="密码强度" weakLabel="轻" mediumLabel="中" strongLabel="强" v-model="newPassword" toggleMask
+          inputId="password" />
+        <label for="password">密码</label>
+      </FloatLabel>
+    </div>
+    <template #footer>
+      <Button label="取消" severity="info" outlined size="small" icon="pi pi-times" text @click="cancelDelete" />
+      <Button label="确认" severity="success" outlined size="small" icon="pi pi-check" text @click="handlerDelete" />
     </template>
   </Dialog>
 </template>
@@ -157,17 +172,25 @@ const optionItems = ref([
 const moreItems = ref([
   {
     label: '重置密码',
-    icon: 'pi pi-lock'
+    icon: 'pi pi-lock',
+    command: () => {
+      toast.success("我是重置密码的提示信息")
+    }
   },
   {
     label: '分配角色',
-    icon: 'pi pi-key'
+    icon: 'pi pi-key',
+    command: () => {
+      toast.success("我是分配角色的提示信息")
+    }
   },
 ]);
 const selecteds = ref([]);
 const deleteUsersDialog = ref(false);
 const deleteUserDialog = ref(false);
+const resetPwdDialog = ref(false);
 const userId = ref(null);
+const newPassword = ref('');
 
 onMounted(() => {
   getUserList();
