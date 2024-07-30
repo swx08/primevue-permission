@@ -72,13 +72,15 @@
             {{ data.createTime }}
           </template>
         </Column>
-        <Column :exportable="false" style="min-width: 15rem" frozen>
+        <Column :exportable="false" header="操作" style="min-width: 12rem" frozen>
           <template #body="{data}">
             <ConfirmPopup></ConfirmPopup>
-            <div style="display: flex;justify-content: space-evenly;">
+            <div>
               <Button icon="pi pi-pencil" outlined rounded />
-              <Button @click="confirmDeleteUser(data.id)" icon="pi pi-trash" outlined rounded severity="danger" />
-              <Button icon="pi pi-ellipsis-h" outlined rounded severity="info" />
+              <Button @click="confirmDeleteUser(data.id)" icon="pi pi-trash" outlined rounded severity="danger"
+                style="margin: 0 10px;" />
+              <Button icon="pi  pi-ellipsis-h" @click="moreToggle" outlined rounded severity="info" />
+              <Menu ref="moreMenu" id="config_menu" :model="moreItems" popup />
             </div>
           </template>
         </Column>
@@ -125,6 +127,7 @@ import { toast } from 'vue3-toastify';
 
 const statusData = ref([]);
 const menu = ref(null);
+const moreMenu = ref(null);
 const loading = ref(true);
 const tableData = ref([]);
 const pageNo = ref(1);
@@ -138,12 +141,26 @@ const searchUser = ref({
 const saveLoading = ref(false);
 const optionItems = ref([
   {
+    label: '新增',
+    icon: 'pi pi-plus'
+  },
+  {
     label: '导入',
     icon: 'pi pi-file-import'
   },
   {
     label: '导出',
     icon: 'pi pi-file-export'
+  },
+]);
+const moreItems = ref([
+  {
+    label: '重置密码',
+    icon: 'pi pi-lock'
+  },
+  {
+    label: '分配角色',
+    icon: 'pi pi-key'
   },
 ]);
 const selecteds = ref([]);
@@ -209,6 +226,10 @@ const handleSearch = () => {
 //添加菜单数据
 const toggle = (event) => {
   menu.value.toggle(event);
+};
+
+const moreToggle = (event) => {
+  moreMenu.value.toggle(event);
 };
 
 const deleteDialog = () => {
