@@ -26,16 +26,18 @@
                 </FloatLabel>
               </div>
               <div class="panel-right">
-                <Button label="查询" outlined size="small" icon="pi pi-search" severity="success" />
-                <Button label="重置" outlined size="small" icon="pi pi-refresh" severity="secondary" />
+                <Button @click="handleSearch" label="查询" outlined size="small" icon="pi pi-search" severity="success"
+                  :loading="saveLoading" />
+                <Button @click="handleReset" label="重置" outlined size="small" icon="pi pi-refresh"
+                  severity="secondary" />
                 <Button label="批量删除" outlined size="small" icon="pi pi-trash" severity="danger" />
               </div>
             </div>
           </Panel>
         </template>
         <template #empty>
-          <div style="text-align: center;">
-            用户数据为空
+          <div class="empty">
+            <svg-icon name="empty" width="110px" height="110px" />
           </div>
         </template>
         <Column selectionMode="multiple" style="width: 3rem" frozen :exportable="false"></Column>
@@ -106,14 +108,7 @@ const searchUser = ref({
   phone: '',
   status: null
 });
-const cities = ref([
-  { name: 'New York', code: 'NY' },
-  { name: 'Rome', code: 'RM' },
-  { name: 'London', code: 'LDN' },
-  { name: 'Istanbul', code: 'IST' },
-  { name: 'Paris', code: 'PRS' }
-]);
-
+const saveLoading = ref(false);
 const optionItems = ref([
   {
     label: '导入',
@@ -140,6 +135,8 @@ const getUserList = () => {
       loading.value = false;
     } else {
       loading.value = false;
+      tableData.value = [];
+      total.value = 0;
     }
   });
 };
@@ -158,6 +155,25 @@ const getDictTypeStatus = () => {
       statusData.value = res.data;
     }
   })
+}
+
+//重置
+const handleReset = () => {
+  searchUser.value = {
+    username: '',
+    phone: '',
+    status: null
+  }
+  getUserList();
+}
+
+//查询
+const handleSearch = () => {
+  if ((searchUser.value.username !== "") || (searchUser.value.phone !== "") || (searchUser.value.status !== null)) {
+    saveLoading.value = true;
+    getUserList();
+    saveLoading.value = false;
+  }
 }
 
 const toggle = (event) => {
@@ -194,5 +210,12 @@ const toggle = (event) => {
 
 :deep(.p-datatable-header) {
   padding: 0 0 16px 0;
+}
+
+.empty {
+  height: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
