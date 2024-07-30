@@ -2,12 +2,10 @@
   <Card>
     <template #content>
       <TreeTable
+        :value="tableData"
         scrollable
         scrollHeight="430px"
         stripedRows
-        v-model:selection="selecteds"
-        :value="tableData"
-        dataKey="id"
         :loading="loading"
       >
         <template #header>
@@ -80,67 +78,72 @@
             </div>
           </Panel>
         </template>
+
         <template #empty>
           <div class="empty">
             <svg-icon name="empty" width="110px" height="110px" />
           </div>
         </template>
-        <Column
-          selectionMode="multiple"
-          style="width: 3rem"
-          frozen
-          :exportable="false"
-        ></Column>
+
         <Column
           field="id"
           header="编号"
           sortable
           frozen
+          expander
           style="min-width: 8rem"
         >
-          <template #body="{ data }">
-            {{ data.id }}
-          </template>
         </Column>
         <Column
-          header="用户名"
+          header="组件名称"
           sortable
-          field="username"
+          field="name"
           style="min-width: 10rem"
         >
-          <template #body="{ data }">
-            <span>{{ data.username }}</span>
-          </template>
-        </Column>
-        <Column header="手机号" field="phone" sortable style="min-width: 12rem">
-          <template #body="{ data }">
-            <span>{{ data.phone }}</span>
-          </template>
-        </Column>
-        <Column field="email" header="邮箱" sortable style="min-width: 15rem">
-          <template #body="{ data }">
-            {{ data.email }}
-          </template>
-        </Column>
-        <Column header="状态" field="status" style="min-width: 8rem">
-          <template #body="{ data }">
-            <ToggleSwitch
-              @change="handleChangeStatus(data.id)"
-              v-model="data.checked"
-            />
-          </template>
         </Column>
         <Column
-          field="createTime"
+          header="菜单名称"
+          field="title"
           sortable
-          header="创建时间"
-          style="min-width: 15rem"
+          style="min-width: 10rem"
         >
-          <template #body="{ data }">
-            {{ data.createTime }}
+        </Column>
+        <Column field="type" header="类型" sortable style="min-width: 8rem">
+          <template #body="{ node }">
+            <Tag v-if="node.data.type === 0" severity="info" value="目录"></Tag>
+            <Tag
+              v-if="node.data.type === 1"
+              severity="success"
+              value="菜单"
+            ></Tag>
+            <Tag v-if="node.data.type === 2" severity="warn" value="按钮"></Tag>
+            {{ type }}
           </template>
         </Column>
-        <Column header="操作" style="min-width: 12rem" frozen>
+        <Column header="权限标识" sortable field="permission" style="min-width: 15rem">
+        </Column>
+        <Column
+          field="component"
+          sortable
+          header="组件路径"
+          style="min-width: 16rem"
+        >
+        </Column>
+        <Column field="status" sortable header="状态" style="min-width: 8rem">
+          <template #body="{ node }">
+            <Tag
+              v-if="node.data.status === 0"
+              severity="danger"
+              value="禁用"
+            ></Tag>
+            <Tag
+              v-if="node.data.status === 1"
+              severity="success"
+              value="正常"
+            ></Tag>
+          </template>
+        </Column>
+        <Column header="操作" alignFrozen="right" style="min-width: 12rem" frozen>
           <template #body="{ data }">
             <ConfirmPopup></ConfirmPopup>
             <div>
@@ -180,28 +183,18 @@
           </template>
         </Column>
       </TreeTable>
-
-      <!-- 分页 -->
-      <Paginator
-        @page="handlePaginationChange"
-        :rows="pageSize"
-        :totalRecords="total"
-        :rowsPerPageOptions="[10, 20, 30, 40]"
-      >
-      </Paginator>
     </template>
   </Card>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { MENU_CONSTANT } from "@/constant/dictType.js";
+import { queryDictLabel } from "@/api/dict_data";
+import { queryMenuList } from "@/api/menu";
 
-const selecteds = ref([]);
 const loading = ref(false);
 const tableData = ref([]);
-const pageNo = ref(1);
-const pageSize = ref(10);
-const total = ref(0);
 const optionItems = ref([
   {
     label: "新增",
@@ -209,28 +202,53 @@ const optionItems = ref([
     // command: () => {
     //   addOrEditUserDialog.value = true;
     // },
-  }
+  },
 ]);
 const searchMenu = ref({
   title: "",
   type: null,
-  status: null
+  status: null,
 });
 const typeData = ref([
   {
-    label: '目录',
-    value: 0
+    label: "目录",
+    value: 0,
   },
   {
-    label: '菜单',
-    value: 1
+    label: "菜单",
+    value: 1,
   },
   {
-    label: '按钮',
-    value: 2
-  }
-])
+    label: "按钮",
+    value: 2,
+  },
+]);
+const statusData = ref([]);
 
+onMounted(() => {
+  getAllMenuData();
+  getDictTypeStatus();
+});
+//获取菜单数据 抽屉树形数据
+const getAllMenuData = () => {
+  queryMenuList().then((res) => {
+    if (res.code === 200) {
+      tableData.value = res.data;
+      loading.value = false;
+    } else {
+      loading.value = false;
+    }
+  });
+};
+
+//查询字典状态
+const getDictTypeStatus = () => {
+  queryDictLabel(MENU_CONSTANT).then((res) => {
+    if (res.code === 200) {
+      statusData.value = res.data;
+    }
+  });
+};
 </script>
 
 <style lang="scss" scoped>

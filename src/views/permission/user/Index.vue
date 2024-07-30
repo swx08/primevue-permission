@@ -104,9 +104,6 @@
           frozen
           style="min-width: 8rem"
         >
-          <template #body="{ data }">
-            {{ data.id }}
-          </template>
         </Column>
         <Column
           header="用户名"
@@ -114,19 +111,10 @@
           field="username"
           style="min-width: 10rem"
         >
-          <template #body="{ data }">
-            <span>{{ data.username }}</span>
-          </template>
         </Column>
         <Column header="手机号" field="phone" sortable style="min-width: 12rem">
-          <template #body="{ data }">
-            <span>{{ data.phone }}</span>
-          </template>
         </Column>
         <Column field="email" header="邮箱" sortable style="min-width: 15rem">
-          <template #body="{ data }">
-            {{ data.email }}
-          </template>
         </Column>
         <Column header="状态" field="status" style="min-width: 8rem">
           <template #body="{ data }">
@@ -142,9 +130,6 @@
           header="创建时间"
           style="min-width: 15rem"
         >
-          <template #body="{ data }">
-            {{ data.createTime }}
-          </template>
         </Column>
         <Column header="操作" style="min-width: 12rem" frozen>
           <template #body="{ data }">
@@ -437,7 +422,7 @@ import {
   queryEchoUserInfo,
   updateUserInfo,
   saveRoles,
-  queryRoles
+  queryRoles,
 } from "@/api/user";
 import { queryRoleList } from "@/api/role";
 import { USER_CONSTANT } from "@/constant/dictType.js";
@@ -606,7 +591,7 @@ const moreToggle = (event, data) => {
     if (res.code === 200) {
       selectedRoleList.value = res.data;
     }
-  })
+  });
 };
 
 //更多操作（重置密码、分配角色）

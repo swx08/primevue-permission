@@ -6,7 +6,7 @@ const PREFIX = "/menu";
 export function queryMenuList() {
   return request({
     //模板字符串拼接参数
-    url: `${PREFIX}/list`,
+    url: `${PREFIX}/primeVue/list`,
     method: "GET",
   });
 }
