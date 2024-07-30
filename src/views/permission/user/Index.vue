@@ -26,10 +26,10 @@
                 </FloatLabel>
               </div>
               <div class="panel-right">
-                <Button @click="handleSearch" label="查询" outlined size="small" icon="pi pi-search" severity="success"
-                  :loading="saveLoading" />
-                <Button @click="handleReset" label="重置" outlined size="small" icon="pi pi-refresh"
-                  severity="secondary" />
+                <Button @click="handleSearch" v-permission="`permission:user:query`" label="查询" outlined size="small"
+                  icon="pi pi-search" severity="success" :loading="saveLoading" />
+                <Button @click="handleReset" v-permission="`permission:user:reset`" label="重置" outlined size="small"
+                  icon="pi pi-refresh" severity="secondary" />
                 <Button :disabled="!selecteds || !selecteds.length" label="批量删除" outlined size="small"
                   icon="pi pi-trash" severity="danger" @click="deleteDialog" />
               </div>
@@ -76,10 +76,11 @@
           <template #body="{data}">
             <ConfirmPopup></ConfirmPopup>
             <div>
-              <Button icon="pi pi-pencil" outlined rounded />
-              <Button @click="confirmDeleteUser(data.id)" icon="pi pi-trash" outlined rounded severity="danger"
-                style="margin: 0 10px;" />
-              <Button icon="pi  pi-ellipsis-h" @click="moreToggle" outlined rounded severity="info" />
+              <Button v-permission="`permission:user:update`" icon="pi pi-pencil" outlined rounded />
+              <Button v-permission="`permission:user:delete`" @click="confirmDeleteUser(data.id)" icon="pi pi-trash"
+                outlined rounded severity="danger" style="margin: 0 10px;" />
+              <Button v-permission="`permission:user:more`" icon="pi  pi-ellipsis-h" @click="moreToggle" outlined
+                rounded severity="info" />
               <Menu ref="moreMenu" id="config_menu" :model="moreItems" popup />
             </div>
           </template>
