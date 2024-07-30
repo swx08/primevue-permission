@@ -203,13 +203,14 @@
     v-model:visible="addOrEditUserDialog"
     :style="{ width: '380px' }"
     :modal="true"
+    :closable="false"
   >
-    <template #closeicon>
-      <i class="pi pi-times" @click="cancelDelete"></i>
-    </template>
     <template #header>
       <div class="form-header">
-        <span>{{ user.id === null ? "新增用户" : "修改用户" }}</span>
+        <div class="header">
+          <span>{{ user.id === null ? "新增用户" : "修改用户" }}</span>
+          <Button @click="cancelDelete" icon="pi pi-times" rounded severity="secondary" text />
+        </div>
       </div>
     </template>
     <div class="form-body">
@@ -266,7 +267,7 @@
   <Dialog
     :closable="false"
     v-model:visible="deleteUsersDialog"
-    :style="{ width: '450px' }"
+    :style="{ width: '380px' }"
     header="用户删除"
     :modal="true"
   >
@@ -299,7 +300,7 @@
   <Dialog
     :closable="false"
     v-model:visible="deleteUserDialog"
-    :style="{ width: '450px' }"
+    :style="{ width: '380px' }"
     header="用户删除"
     :modal="true"
   >
@@ -331,15 +332,16 @@
   <!-- 重置密码 -->
   <Dialog
     v-model:visible="resetPwdDialog"
-    :style="{ width: '360px' }"
+    :style="{ width: '380px' }"
     :modal="true"
+    :closable="false"
   >
-    <template #closeicon>
-      <i class="pi pi-times" @click="cancelDelete"></i>
-    </template>
     <template #header>
       <div class="form-header">
-        <span>重置密码</span>
+        <div class="header">
+          <span>重置密码</span>
+          <Button @click="cancelDelete" icon="pi pi-times" rounded severity="secondary" text />
+        </div>
       </div>
     </template>
     <div class="reset-form-body">
@@ -542,13 +544,13 @@ const handlerAddOrEditUser = () => {
   user.value.username = user.value.username.trim();
   user.value.phone = user.value.phone.trim();
   user.value.email = user.value.email.trim();
-  if(user.value.password){
+  if (user.value.password) {
     user.value.password = user.value.password.trim();
   }
 
   if (user.id === null) {
     addUser(user.value);
-  }else{
+  } else {
     editUser(user.value);
   }
 };
@@ -575,7 +577,7 @@ const editUser = (item) => {
       toast.success("修改成功！");
       addOrEditUserDialog.value = false;
       getUserList();
-    }else {
+    } else {
       if (res.data !== null) {
         validate.value = res.data;
       }
@@ -708,14 +710,23 @@ const handlerDelete = () => {
 }
 
 .form-header {
+  width: 100%;
   display: flex;
   justify-content: center;
-  width: 100%;
   align-items: center;
 }
 
-.form-header span {
+.form-header .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 250px;
+  line-height: 30px;
+}
+
+.header span {
   font-size: 1.2rem;
+  font-weight: bold;
 }
 
 .form-body {
