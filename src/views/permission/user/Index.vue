@@ -113,24 +113,20 @@
     </template>
     <div class="form-body">
       <div>
-        <label>用户名</label>
-        <InputText v-model="user.username" />
+        <InputText placeholder="用户名" v-model="user.username" />
         <small v-if="validate.username" id="small-help">{{ validate.username }}</small>
       </div>
       <div>
-        <label for="password">密码</label>
-        <Password promptLabel="密码强度" weakLabel="轻" mediumLabel="中" strongLabel="强" v-model="user.password"
-          inputId="password" />
+        <Password placeholder="密码" promptLabel="密码强度" weakLabel="轻" mediumLabel="中" strongLabel="强"
+          v-model="user.password" inputId="password" />
         <small v-if="validate.password" id="small-help">{{ validate.password }}</small>
       </div>
       <div>
-        <label for="phone">手机号</label>
-        <InputText id="phone" v-model="user.phone" />
+        <InputText placeholder="手机号" id="phone" v-model="user.phone" />
         <small v-if="validate.phone" id="small-help">{{ validate.phone }}</small>
       </div>
       <div>
-        <label for="email">邮箱</label>
-        <InputText id="email" v-model="user.email" />
+        <InputText id="email" placeholder="邮箱" v-model="user.email" />
         <small v-if="validate.email" id="small-help">{{ validate.email }}</small>
       </div>
     </div>
@@ -166,17 +162,23 @@
   </Dialog>
 
   <!-- 重置密码 -->
-  <Dialog :closable="false" v-model:visible="resetPwdDialog" :style="{ width: '450px' }" header="重置密码" :modal="true">
-    <div style="display: flex;justify-content: center;align-items: center">
-      <FloatLabel>
-        <Password promptLabel="密码强度" weakLabel="轻" mediumLabel="中" strongLabel="强" v-model="resetUserObj.password"
-          toggleMask inputId="password" />
-        <label for="password">密码</label>
-      </FloatLabel>
+  <Dialog v-model:visible="resetPwdDialog" :style="{ width: '360px' }" :modal="true">
+    <template #closeicon>
+      <i class="pi pi-times" @click="cancelDelete"></i>
+    </template>
+    <template #header>
+      <div class="form-header">
+        <span>重置密码</span>
+      </div>
+    </template>
+    <div class="reset-form-body">
+      <Password promptLabel="密码强度" weakLabel="轻" mediumLabel="中" strongLabel="强" v-model="resetUserObj.password"
+        inputId="password" placeholder="新密码" />
     </div>
     <template #footer>
-      <Button label="取消" severity="info" outlined size="small" icon="pi pi-times" text @click="cancelDelete" />
-      <Button label="确认" severity="success" outlined size="small" icon="pi pi-check" text @click="handleResetPwd" />
+      <div class="footer">
+        <Button label="确认" severity="success" icon="pi pi-check" @click="handleResetPwd" />
+      </div>
     </template>
   </Dialog>
 </template>
@@ -494,10 +496,16 @@ const handlerDelete = () => {
   gap: 20px;
 }
 
+.reset-form-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
 .form-body div {
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
 .form-body input {
@@ -521,6 +529,7 @@ const handlerDelete = () => {
 }
 
 #small-help{
+  margin-top: 6px;
   color: red;
   font-size: 12px;
 }
