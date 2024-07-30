@@ -64,7 +64,7 @@
         </Column>
         <Column header="状态" field="status" style="min-width: 8rem">
           <template #body="{ data }">
-            <ToggleSwitch v-model="data.checked" />
+            <ToggleSwitch @change="handleChangeStatus(data.id)" v-model="data.checked" />
           </template>
         </Column>
         <Column field="createTime" sortable header="创建时间" style="min-width: 15rem">
@@ -120,7 +120,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { findUserList, batchDelete, deleteUser } from "@/api/user";
+import { findUserList, batchDelete, deleteUser, updateUserStatus } from "@/api/user";
 import { USER_CONSTANT } from "@/constant/dictType.js";
 import { queryDictLabel } from "@/api/dict_data";
 import { toast } from 'vue3-toastify';
@@ -231,6 +231,15 @@ const toggle = (event) => {
 const moreToggle = (event) => {
   moreMenu.value.toggle(event);
 };
+
+//修改用户状态
+const handleChangeStatus = (id) => {
+  updateUserStatus(id).then((res) => {
+    if (res.code === 200) {
+      toast.success("修改成功！");
+    }
+  })
+}
 
 const deleteDialog = () => {
   deleteUsersDialog.value = true;

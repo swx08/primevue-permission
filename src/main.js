@@ -33,6 +33,9 @@ import "./permission";
 import "virtual:svg-icons-register";
 import globalComponent from "@/plugins";
 
+//引入自定义指令文件
+import { hasPermission } from "@/permission/index";
+
 import { useThemeStore } from "@/stores/models/theme";
 
 const app = createApp(App);
@@ -49,6 +52,10 @@ app.use(Vue3Toasity, {
 
 //安装自定义插件
 app.use(globalComponent);
+
+//注册自定义指令
+hasPermission(app);
+
 //将各种实例挂载到全局
 const themeStore = useThemeStore();
 console.log(themeStore);
