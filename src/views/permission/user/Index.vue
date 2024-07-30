@@ -7,7 +7,7 @@
           <Panel toggleable header="查询">
             <template #icons>
               <Button icon="pi pi-cog" severity="secondary" rounded text @click="toggle" />
-              <Menu ref="menu" id="config_menu" :model="items" popup />
+              <Menu ref="menu" id="config_menu" :model="optionItems" popup />
             </template>
             <div class="panel-container">
               <div class="panel-left">
@@ -20,8 +20,8 @@
                   <label for="phone">手机号</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <Select class="input" v-model="searchUser.status" inputId="dd-city" :options="cities"
-                    optionLabel="name" />
+                  <Select class="input" v-model="searchUser.status" inputId="dd-city" :options="statusData"
+                    optionLabel="label" optionValue="value" showClear />
                   <label for="dd-city">用户状态</label>
                 </FloatLabel>
               </div>
@@ -82,7 +82,8 @@
 
       <!-- 分页 -->
       <Paginator @page="handlePaginationChange" :rows="pageSize" :totalRecords="total"
-        :rowsPerPageOptions="[10, 20, 30, 40]"></Paginator>
+        :rowsPerPageOptions="[10, 20, 30, 40]">
+      </Paginator>
     </template>
   </Card>
 </template>
@@ -90,7 +91,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { findUserList } from "@/api/user";
+import { USER_CONSTANT } from "@/constant/dictType.js";
+import { queryDictLabel } from "@/api/dict_data";
 
+const statusData = ref([]);
 const menu = ref(null);
 const loading = ref(true);
 const tableData = ref([]);
@@ -110,7 +114,7 @@ const cities = ref([
   { name: 'Paris', code: 'PRS' }
 ]);
 
-const items = ref([
+const optionItems = ref([
   {
     label: '导入',
     icon: 'pi pi-file-import'
@@ -124,6 +128,7 @@ const selecteds = ref([]);
 
 onMounted(() => {
   getUserList();
+  getDictTypeStatus();
 });
 
 //获取用户分页数据
@@ -144,6 +149,15 @@ const handlePaginationChange = (event) => {
   pageNo.value = event.page + 1;
   pageSize.value = event.rows;
   getUserList();
+}
+
+//查询字典状态
+const getDictTypeStatus = () => {
+  queryDictLabel(USER_CONSTANT).then((res) => {
+    if (res.code === 200) {
+      statusData.value = res.data;
+    }
+  })
 }
 
 const toggle = (event) => {
@@ -178,7 +192,7 @@ const toggle = (event) => {
   justify-content: space-between;
 }
 
-:deep(.p-datatable-header){
+:deep(.p-datatable-header) {
   padding: 0 0 16px 0;
 }
 </style>
