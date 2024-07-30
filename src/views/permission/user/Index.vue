@@ -73,14 +73,14 @@
           </template>
         </Column>
         <Column header="操作" style="min-width: 12rem" frozen>
-          <template #body="{data}">
+          <template #body="{ data }">
             <ConfirmPopup></ConfirmPopup>
             <div>
               <Button v-permission="`permission:user:update`" icon="pi pi-pencil" outlined rounded />
               <Button v-permission="`permission:user:delete`" @click="confirmDeleteUser(data.id)" icon="pi pi-trash"
                 outlined rounded severity="danger" style="margin: 0 10px;" />
-              <Button v-permission="`permission:user:more`" icon="pi  pi-ellipsis-h" @click="moreToggle($event,data.id)" outlined
-                rounded severity="info" />
+              <Button v-permission="`permission:user:more`" icon="pi  pi-ellipsis-h"
+                @click="moreToggle($event, data.id)" outlined rounded severity="info" />
               <Menu ref="moreMenu" id="config_menu" :model="moreItems" popup>
                 <template #item="{ item, props }">
                   <a @click="handlerMoreOption(item)" v-bind="props.action">
@@ -100,6 +100,46 @@
       </Paginator>
     </template>
   </Card>
+
+  <!-- 新增、修改用户弹框 -->
+  <Dialog v-model:visible="addOrEditUserDialog" :style="{ width: '360px' }" :modal="true">
+    <template #closeicon>
+      <i class="pi pi-times" @click="cancelDelete"></i>
+    </template>
+    <template #header>
+      <div class="form-header">
+        <span>新增用户</span>
+      </div>
+    </template>
+    <div class="form-body">
+      <div>
+        <label>用户名</label>
+        <InputText v-model="user.username" />
+        <small v-if="validate.username" id="small-help">{{ validate.username }}</small>
+      </div>
+      <div>
+        <label for="password">密码</label>
+        <Password promptLabel="密码强度" weakLabel="轻" mediumLabel="中" strongLabel="强" v-model="user.password"
+          inputId="password" />
+        <small v-if="validate.password" id="small-help">{{ validate.password }}</small>
+      </div>
+      <div>
+        <label for="phone">手机号</label>
+        <InputText id="phone" v-model="user.phone" />
+        <small v-if="validate.phone" id="small-help">{{ validate.phone }}</small>
+      </div>
+      <div>
+        <label for="email">邮箱</label>
+        <InputText id="email" v-model="user.email" />
+        <small v-if="validate.email" id="small-help">{{ validate.email }}</small>
+      </div>
+    </div>
+    <template #footer>
+      <div class="footer">
+        <Button label="确认" severity="success" icon="pi pi-check" @click="handlerAddOrEditUser" />
+      </div>
+    </template>
+  </Dialog>
 
   <!-- 批量删除用户弹框 -->
   <Dialog :closable="false" v-model:visible="deleteUsersDialog" :style="{ width: '450px' }" header="用户删除" :modal="true">
@@ -129,8 +169,8 @@
   <Dialog :closable="false" v-model:visible="resetPwdDialog" :style="{ width: '450px' }" header="重置密码" :modal="true">
     <div style="display: flex;justify-content: center;align-items: center">
       <FloatLabel>
-        <Password promptLabel="密码强度" weakLabel="轻" mediumLabel="中" strongLabel="强" v-model="resetUserObj.password" toggleMask
-          inputId="password" />
+        <Password promptLabel="密码强度" weakLabel="轻" mediumLabel="中" strongLabel="强" v-model="resetUserObj.password"
+          toggleMask inputId="password" />
         <label for="password">密码</label>
       </FloatLabel>
     </div>
@@ -143,7 +183,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { findUserList, batchDelete, deleteUser, updateUserStatus, resetPwd } from "@/api/user";
+import { findUserList, batchDelete, deleteUser, updateUserStatus, resetPwd, register } from "@/api/user";
 import { USER_CONSTANT } from "@/constant/dictType.js";
 import { queryDictLabel } from "@/api/dict_data";
 import { toast } from 'vue3-toastify';
@@ -165,7 +205,10 @@ const saveLoading = ref(false);
 const optionItems = ref([
   {
     label: '新增',
-    icon: 'pi pi-plus'
+    icon: 'pi pi-plus',
+    command: () => {
+      addOrEditUserDialog.value = true;
+    }
   },
   {
     label: '导入',
@@ -190,6 +233,7 @@ const selecteds = ref([]);
 const deleteUsersDialog = ref(false);
 const deleteUserDialog = ref(false);
 const resetPwdDialog = ref(false);
+const addOrEditUserDialog = ref(false);
 const userId = ref(null);
 const resetUserObj = ref(
   {
@@ -197,6 +241,20 @@ const resetUserObj = ref(
     password: ''
   }
 );
+const user = ref({
+  id: null,
+  username: '',
+  password: '',
+  phone: '',
+  email: ''
+});
+const validate = ref({
+  username: '',
+  phone: '',
+  email: '',
+  password: ''
+});
+
 
 onMounted(() => {
   getUserList();
@@ -284,6 +342,25 @@ const handleResetPwd = () => {
   })
 }
 
+//新增、修改用户
+const handlerAddOrEditUser = () => {
+  user.value.username = user.value.username.trim();
+  user.value.phone = user.value.phone.trim();
+  user.value.email = user.value.email.trim();
+  user.value.password = user.value.password.trim();
+  register(user.value).then((res) => {
+    if (res.code === 200) {
+      toast.success("新增成功！");
+      addOrEditUserDialog.value = false;
+      getUserList();
+    } else {
+      if (res.data !== null) {
+        validate.value = res.data;
+      }
+    }
+  })
+}
+
 //修改用户状态
 const handleChangeStatus = (id) => {
   updateUserStatus(id).then((res) => {
@@ -311,14 +388,30 @@ const handlerBatchDelete = () => {
     })
   }
 }
-
-//取消删除用户
-const cancelDelete = () => {
+const cancelDalog = () => {
   deleteUsersDialog.value = false;
   deleteUserDialog.value = false;
   resetPwdDialog.value = false;
+  addOrEditUserDialog.value = false;
+}
+
+const handlerSetValue = () => {
+  user.value.id = null
+  user.value.username = '';
+  user.value.password = '';
+  user.value.phone = '';
+  user.value.email = '';
   resetUserObj.value.id = null;
   resetUserObj.value.password = '';
+  validate.value.username = '';
+  validate.value.password = '';
+  validate.value.phone = '';
+  validate.value.email = '';
+}
+//取消删除用户
+const cancelDelete = () => {
+  cancelDalog();
+  handlerSetValue();
 }
 
 //删除用户
@@ -376,9 +469,59 @@ const handlerDelete = () => {
   align-items: center;
 }
 
-.icon{
+.icon {
   color: red;
   margin: 0 10px;
   font-size: 1.5rem;
+}
+
+.form-header {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  align-items: center;
+}
+
+.form-header span {
+  font-size: 1.2rem;
+}
+
+.form-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.form-body div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-body input {
+  width: 250px;
+}
+
+:deep(.p-inputtext) {
+  width: 250px;
+}
+
+.footer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer button {
+  width: 250px;
+  margin: 10px 0 10px 0;
+}
+
+#small-help{
+  color: red;
+  font-size: 12px;
 }
 </style>

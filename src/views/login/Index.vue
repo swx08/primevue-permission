@@ -65,7 +65,7 @@ const handlerDoLogin = async () => {
         toast.success("登录成功！");
         router.push({ path: "/" });
     } catch (error) {
-        console.log("登录失败");
+        loading.value = false;
     }
 }
 </script>
