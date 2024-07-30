@@ -417,6 +417,8 @@
           @click="handlerSaveRoleList"
           label="确认"
           style="width: 100%"
+          icon="pi fill-transparent pi-check"
+          :disabled="!selectedRoleList || !selectedRoleList.length"
         />
       </div>
     </template>
