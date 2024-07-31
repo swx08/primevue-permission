@@ -195,7 +195,9 @@
     @hide="handlerCancel"
   >
     <template #header>
-      <span style="font-weight: bold; font-size: 18px">新增菜单</span>
+      <span style="font-weight: bold; font-size: 18px">{{
+        menuDTO.id === undefined ? "新增菜单" : "修改菜单"
+      }}</span>
     </template>
 
     <div class="msg-tip">
@@ -294,6 +296,7 @@ import {
   queryMenuListByLike,
   addMenu,
   echoMenu,
+  updateMenu,
 } from "@/api/menu";
 import { create_verify } from "vue-best-verify";
 import { toast } from "vue3-toastify";
@@ -455,6 +458,8 @@ const handlerSaveOrEditMenu = () => {
       saveLoading.value = true;
       if (menuDTO.value.id === undefined) {
         handleAdd();
+      } else {
+        handleEdit();
       }
     }
   }
@@ -476,6 +481,22 @@ const handleAdd = () => {
   });
 };
 
+//修改菜单
+const handleEdit = () => {
+  //修改菜单
+  updateMenu(menuDTO.value).then((res) => {
+    if (res.code === 200) {
+      toast.success("修改成功！");
+      addDirectDrawer.value = false;
+      saveLoading.value = false;
+      menuDTO.value = {};
+      getAllMenuData();
+    } else {
+      saveLoading.value = false;
+    }
+  });
+};
+
 //回显菜单数据
 const handleEchoMenu = (menu) => {
   echoMenu(menu.id).then((res) => {
@@ -487,38 +508,38 @@ const handleEchoMenu = (menu) => {
         btnShow.value = true;
         typeData.value = [
           {
-            label: '目录',
+            label: "目录",
             value: 0,
-          }
-        ]
+          },
+        ];
       } else if (menuDTO.value.type === 1) {
         directShow.value = true;
         btnShow.value = true;
         menuShow.value = true;
         typeData.value = [
           {
-            label: '菜单',
+            label: "菜单",
             value: 1,
           },
           {
-            label: '按钮',
+            label: "按钮",
             value: 2,
           },
-        ]
+        ];
       } else if (menuDTO.value.type === 2) {
         btnShow.value = false;
         directShow.value = true;
         menuShow.value = false;
         typeData.value = [
           {
-            label: '菜单',
+            label: "菜单",
             value: 1,
           },
           {
-            label: '按钮',
+            label: "按钮",
             value: 2,
           },
-        ]
+        ];
       }
 
       addDirectDrawer.value = true;
