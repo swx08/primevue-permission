@@ -164,7 +164,7 @@
                 :disabled="node.data.type === 2"
               />
               <Button
-                @click="handleEchoUser(node.data)"
+                @click="handleEchoMenu(node.data)"
                 v-permission="`permission:menu:update`"
                 icon="pi pi-pencil"
                 outlined
@@ -289,7 +289,12 @@
 import { ref, onMounted } from "vue";
 import { MENU_CONSTANT } from "@/constant/dictType.js";
 import { queryDictLabel } from "@/api/dict_data";
-import { queryMenuList, queryMenuListByLike, addMenu } from "@/api/menu";
+import {
+  queryMenuList,
+  queryMenuListByLike,
+  addMenu,
+  echoMenu,
+} from "@/api/menu";
 import { create_verify } from "vue-best-verify";
 import { toast } from "vue3-toastify";
 import { verifyMenuName } from "@/utils/regexutils";
@@ -302,7 +307,20 @@ const menu = ref();
 const saveLoading = ref(false);
 const loading = ref(false);
 const tableData = ref([]);
-const typeData = ref();
+const typeData = ref([
+  {
+    label: "目录",
+    value: 0,
+  },
+  {
+    label: "菜单",
+    value: 1,
+  },
+  {
+    label: "按钮",
+    value: 2,
+  },
+]);
 const optionItems = ref([
   {
     label: "新增",
@@ -454,6 +472,56 @@ const handleAdd = () => {
       getAllMenuData();
     } else {
       saveLoading.value = false;
+    }
+  });
+};
+
+//回显菜单数据
+const handleEchoMenu = (menu) => {
+  echoMenu(menu.id).then((res) => {
+    if (res.code === 200) {
+      menuDTO.value = res.data;
+      if (menuDTO.value.type === 0) {
+        directShow.value = false;
+        menuShow.value = false;
+        btnShow.value = true;
+        typeData.value = [
+          {
+            label: '目录',
+            value: 0,
+          }
+        ]
+      } else if (menuDTO.value.type === 1) {
+        directShow.value = true;
+        btnShow.value = true;
+        menuShow.value = true;
+        typeData.value = [
+          {
+            label: '菜单',
+            value: 1,
+          },
+          {
+            label: '按钮',
+            value: 2,
+          },
+        ]
+      } else if (menuDTO.value.type === 2) {
+        btnShow.value = false;
+        directShow.value = true;
+        menuShow.value = false;
+        typeData.value = [
+          {
+            label: '菜单',
+            value: 1,
+          },
+          {
+            label: '按钮',
+            value: 2,
+          },
+        ]
+      }
+
+      addDirectDrawer.value = true;
     }
   });
 };
