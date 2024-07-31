@@ -132,7 +132,6 @@
         </Column>
         <Column header="操作" style="min-width: 12rem" frozen>
           <template #body="{ data }">
-            <ConfirmPopup></ConfirmPopup>
             <div>
               <Button
                 @click="handleEchoUser(data.id)"

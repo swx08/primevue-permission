@@ -118,7 +118,12 @@
             {{ type }}
           </template>
         </Column>
-        <Column header="权限标识" sortable field="permission" style="min-width: 15rem">
+        <Column
+          header="权限标识"
+          sortable
+          field="permission"
+          style="min-width: 15rem"
+        >
         </Column>
         <Column
           field="component"
@@ -141,19 +146,25 @@
             ></Tag>
           </template>
         </Column>
-        <Column header="操作" alignFrozen="right" style="min-width: 12rem" frozen>
-          <template #body="{ data }">
-            <ConfirmPopup></ConfirmPopup>
+        <Column
+          header="操作"
+          alignFrozen="right"
+          style="min-width: 12rem"
+          frozen
+        >
+          <template #body="{ node }">
             <div>
               <Button
+                @click="handleAddMenu(node.data)"
                 v-permission="`permission:menu:add`"
                 icon="pi  pi-plus"
                 outlined
                 rounded
                 severity="success"
+                :disabled="node.data.type === 2"
               />
               <Button
-                @click="handleEchoUser(data.id)"
+                @click="handleEchoUser(node.data)"
                 v-permission="`permission:menu:update`"
                 icon="pi pi-pencil"
                 outlined
@@ -163,7 +174,7 @@
               />
               <Button
                 v-permission="`permission:menu:delete`"
-                @click="confirmDeleteUser(data.id)"
+                @click="confirmDeleteUser(node.data)"
                 icon="pi pi-trash"
                 outlined
                 rounded
@@ -175,24 +186,137 @@
       </TreeTable>
     </template>
   </Card>
+
+  <!-- 新增目录弹框 -->
+  <Drawer
+    v-model:visible="addDirectDrawer"
+    :style="{ width: '45%' }"
+    position="right"
+    @hide="handlerCancel"
+  >
+    <template #header>
+      <span style="font-weight: bold; font-size: 18px">新增菜单</span>
+    </template>
+
+    <div class="msg-tip">
+      <Message severity="warn">注意：请先选择菜单类型！！！</Message>
+    </div>
+    <div class="form-container" v-verify="verify">
+      <div class="form-group">
+        <label class="form-label">上级菜单</label>
+        <InputText placeholder="上级菜单" v-model="menuDTO.parent" disabled />
+      </div>
+      <div class="form-group">
+        <label class="form-label">菜单类型</label>
+        <Select
+          v-model="menuDTO.type"
+          inputId="dd-city"
+          :options="typeData"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="菜单类型"
+          @change="doChange"
+        />
+      </div>
+      <div class="form-group" v-if="btnShow">
+        <label class="form-label">组件名称</label>
+        <InputText
+          verify="required"
+          placeholder="大写开头：Permission"
+          v-model="menuDTO.name"
+        />
+      </div>
+      <div class="form-group">
+        <label class="form-label">菜单名称</label>
+        <InputText
+          verify="required"
+          placeholder="如：权限管理"
+          v-model="menuDTO.title"
+        />
+      </div>
+      <div class="form-group" v-if="directShow">
+        <label class="form-label">权限标识</label>
+        <InputText
+          verify="required"
+          placeholder="permission:user:add"
+          v-model="menuDTO.permission"
+        />
+      </div>
+      <div class="form-group" v-if="menuShow">
+        <label class="form-label">组件路径</label>
+        <InputText
+          verify="required"
+          placeholder="/permission/user/index"
+          v-model="menuDTO.component"
+        />
+      </div>
+      <div class="form-group">
+        <label class="form-label">菜单状态</label>
+        <Select
+          v-model="menuDTO.status"
+          :options="statusData"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="菜单状态"
+        />
+      </div>
+    </div>
+    <template #footer>
+      <div class="footer">
+        <Button
+          label="确认"
+          severity="success"
+          icon="pi pi-check"
+          @click="handlerSaveOrEditMenu"
+          outlined
+          text
+          :loading="saveLoading"
+        />
+        <Button
+          @click="handlerCancel"
+          label="取消"
+          severity="danger"
+          icon="pi pi-times"
+          outlined
+          text
+        />
+      </div>
+    </template>
+  </Drawer>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import { MENU_CONSTANT } from "@/constant/dictType.js";
 import { queryDictLabel } from "@/api/dict_data";
-import { queryMenuList ,queryMenuListByLike} from "@/api/menu";
+import { queryMenuList, queryMenuListByLike, addMenu } from "@/api/menu";
+import { create_verify } from "vue-best-verify";
+import { toast } from "vue3-toastify";
+import { verifyMenuName } from "@/utils/regexutils";
 
+//表单校验
+const verify = create_verify({
+  border_hint: false,
+});
 const menu = ref();
+const saveLoading = ref(false);
 const loading = ref(false);
 const tableData = ref([]);
+const typeData = ref();
 const optionItems = ref([
   {
     label: "新增",
     icon: "pi pi-plus",
     command: () => {
-       addOrEditUserDialog.value = true;
-     }
+      addDirectDrawer.value = true;
+      menuDTO.value.parent = "主类目";
+      typeData.value = [
+        {
+          label: "目录",
+          value: 0,
+        },
+      ];
+    },
   },
   {
     label: "导入",
@@ -208,21 +332,12 @@ const searchMenu = ref({
   type: null,
   status: null,
 });
-const typeData = ref([
-  {
-    label: "目录",
-    value: 0,
-  },
-  {
-    label: "菜单",
-    value: 1,
-  },
-  {
-    label: "按钮",
-    value: 2,
-  },
-]);
 const statusData = ref([]);
+const addDirectDrawer = ref(false);
+const menuDTO = ref({});
+const directShow = ref(true);
+const menuShow = ref(true);
+const btnShow = ref(true);
 
 onMounted(() => {
   getAllMenuData();
@@ -256,10 +371,14 @@ const toggle = (event) => {
 
 //搜索
 const handleSearch = () => {
-  if ((searchMenu.value.title !== "") || (searchMenu.value.type !== null) || (searchMenu.value.status !== null)) {
+  if (
+    searchMenu.value.title !== "" ||
+    searchMenu.value.type !== null ||
+    searchMenu.value.status !== null
+  ) {
     getMenuListByLike();
   }
-}
+};
 
 //模糊查询
 const getMenuListByLike = () => {
@@ -267,18 +386,109 @@ const getMenuListByLike = () => {
     if (res.code === 200) {
       tableData.value = res.data;
     }
-  })
-}
+  });
+};
 
 //重置
 const handleReset = () => {
   searchMenu.value = {
     title: "",
     type: null,
-    status: null
+    status: null,
   };
   getAllMenuData();
-}
+};
+
+//菜单类型改变
+const doChange = (event) => {
+  const tempType = menuDTO.value.type;
+  const tempParent = menuDTO.value.parent;
+  menuDTO.value = {};
+  menuDTO.value.type = tempType;
+  menuDTO.value.parent = tempParent;
+  if (event.value === 0) {
+    directShow.value = false;
+    menuShow.value = false;
+    btnShow.value = true;
+  } else if (event.value === 1) {
+    directShow.value = true;
+    btnShow.value = true;
+    menuShow.value = true;
+  } else if (event.value === 2) {
+    btnShow.value = false;
+    directShow.value = true;
+    menuShow.value = false;
+  }
+};
+
+//新增、修改菜单
+const handlerSaveOrEditMenu = () => {
+  if (menuDTO.value.type === undefined) {
+    toast.error("请选择菜单类型！");
+  } else {
+    //校验菜单权限标识和组件路径是否符合规范
+    try {
+      verifyMenuName(menuDTO.value);
+    } catch (error) {
+      toast.error(error.message);
+      return;
+    }
+    if (verify.do_verify()) {
+      saveLoading.value = true;
+      if (menuDTO.value.id === undefined) {
+        handleAdd();
+      }
+    }
+  }
+};
+
+//新增菜单
+const handleAdd = () => {
+  //新增菜单
+  addMenu(menuDTO.value).then((res) => {
+    if (res.code === 200) {
+      toast.success("新增成功！");
+      addDirectDrawer.value = false;
+      saveLoading.value = false;
+      menuDTO.value = {};
+      getAllMenuData();
+    } else {
+      saveLoading.value = false;
+    }
+  });
+};
+
+//新增菜单、按钮
+const handleAddMenu = (menu) => {
+  menuDTO.value.parent = menu.title;
+  addDirectDrawer.value = true;
+  typeData.value = [
+    {
+      label: "菜单",
+      value: 1,
+    },
+    {
+      label: "按钮",
+      value: 2,
+    },
+  ];
+};
+
+const cancelDalogOrDrawer = () => {
+  addDirectDrawer.value = false;
+};
+
+const handlerSetValue = () => {
+  menuDTO.value = {};
+  directShow.value = true;
+  menuShow.value = true;
+  btnShow.value = true;
+};
+//所有的弹窗以及抽屉的关闭方法
+const handlerCancel = () => {
+  cancelDalogOrDrawer();
+  handlerSetValue();
+};
 </script>
 
 <style lang="scss" scoped>
@@ -323,5 +533,44 @@ const handleReset = () => {
   color: red;
   margin: 0 10px;
   font-size: 1.5rem;
+}
+
+/* 定义表单容器的样式 */
+.form-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px 30px;
+}
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.form-label {
+  width: 80px;
+  text-align: right;
+  margin-right: 10px;
+}
+
+input[type="text"] {
+  width: 200px;
+}
+
+:deep(.p-select) {
+  width: 200px;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.msg-tip {
+  margin-bottom: 30px;
+  line-height: 38px;
+  padding-top: 10px;
 }
 </style>

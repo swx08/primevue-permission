@@ -23,6 +23,7 @@
     "screenfull": "^6.0.2",
     "simplebar-vue": "^2.3.4",
     "vue": "^3.4.21",
+    "vue-best-verify": "^0.4.0",
     "vue-countup-v3": "^1.4.2",
     "vue-router": "^4.3.2",
     "vue-sidebar-menu": "^5.4.0",
