@@ -174,7 +174,7 @@
               />
               <Button
                 v-permission="`permission:menu:delete`"
-                @click="confirmDeleteUser(node.data)"
+                @click="confirmDeleteMenu(node.data)"
                 icon="pi pi-trash"
                 outlined
                 rounded
@@ -187,7 +187,7 @@
     </template>
   </Card>
 
-  <!-- 新增目录弹框 -->
+  <!-- 新增菜单弹框 -->
   <Drawer
     v-model:visible="addDirectDrawer"
     :style="{ width: '45%' }"
@@ -285,6 +285,39 @@
       </div>
     </template>
   </Drawer>
+
+  <!-- 删除菜单弹框 -->
+  <Dialog
+    :closable="false"
+    v-model:visible="deleteMenuDialog"
+    :style="{ width: '380px' }"
+    header="删除菜单"
+    :modal="true"
+  >
+    <div>
+      <i class="pi pi-exclamation-triangle icon" />
+      <span>您确认要删除菜单数据 ? </span>
+    </div>
+    <template #footer>
+      <Button
+        label="取消"
+        outlined
+        size="small"
+        icon="pi pi-times"
+        text
+        @click="handlerCancel"
+      />
+      <Button
+        label="确认"
+        severity="danger"
+        outlined
+        size="small"
+        icon="pi pi-check"
+        text
+        @click="handlerDeleteMenu"
+      />
+    </template>
+  </Dialog>
 </template>
 
 <script setup>
@@ -297,6 +330,7 @@ import {
   addMenu,
   echoMenu,
   updateMenu,
+  removeMenu
 } from "@/api/menu";
 import { create_verify } from "vue-best-verify";
 import { toast } from "vue3-toastify";
@@ -355,10 +389,12 @@ const searchMenu = ref({
 });
 const statusData = ref([]);
 const addDirectDrawer = ref(false);
+const deleteMenuDialog = ref(false);
 const menuDTO = ref({});
 const directShow = ref(true);
 const menuShow = ref(true);
 const btnShow = ref(true);
+const deleteMenuId = ref(null);
 
 onMounted(() => {
   getAllMenuData();
@@ -563,8 +599,25 @@ const handleAddMenu = (menu) => {
   ];
 };
 
+const confirmDeleteMenu = (menu) => {
+  deleteMenuId.value = menu.id;
+  deleteMenuDialog.value = true;
+}
+
+//删除菜单
+const handlerDeleteMenu = () => {
+  removeMenu(deleteMenuId.value).then((res) => {
+    if (res.code === 200) {
+      toast.success("删除成功！");
+      getAllMenuData();
+      deleteMenuDialog.value = false;
+    }
+  })
+}
+
 const cancelDalogOrDrawer = () => {
   addDirectDrawer.value = false;
+  deleteMenuDialog.value = false;
 };
 
 const handlerSetValue = () => {
@@ -572,6 +625,7 @@ const handlerSetValue = () => {
   directShow.value = true;
   menuShow.value = true;
   btnShow.value = true;
+  deleteMenuId.value = null;
 };
 //所有的弹窗以及抽屉的关闭方法
 const handlerCancel = () => {

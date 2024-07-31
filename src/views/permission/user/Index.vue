@@ -257,7 +257,7 @@
     :closable="false"
     v-model:visible="deleteUsersDialog"
     :style="{ width: '380px' }"
-    header="用户删除"
+    header="删除用户"
     :modal="true"
   >
     <div>
@@ -290,7 +290,7 @@
     :closable="false"
     v-model:visible="deleteUserDialog"
     :style="{ width: '380px' }"
-    header="用户删除"
+    header="删除用户"
     :modal="true"
   >
     <div>
