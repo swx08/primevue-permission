@@ -186,3 +186,69 @@ requests.interceptors.response.use(
 export default requests;
 
 ```
+
+## 数据组件tree使用历程
+
+### 1、树形数据展示要求
+>TreeTable组件同理
+```javascript
+const nodes = ref([
+  {
+    key: "1",
+    label: "测试1",
+    children: [
+      {
+        key: "1-1",
+        label: "测试1-1",
+      },
+      {
+        key: "1-2",
+        label: "测试1-2",
+      },
+    ],
+  },
+  {
+    key: "2",
+    label: "测试2",
+    children: [
+      {
+        key: "2-1",
+        label: "测试2-1",
+      },
+      {
+        key: "2-2",
+        label: "测试2-2",
+      },
+    ],
+  },
+]);
+```
+
+### 2、被选中数据展示要求的数据结构
+>注意：selectedKey必须是一个对象，不能是数组，否则无法联动
+```javascript
+const selectedKey = ref({
+  '1': {
+    checked: false,
+    partialChecked: true,
+  },
+  "1-1": {
+    checked: true,
+    partialChecked: false,
+  },
+  "1-2": {
+    checked: true,
+    partialChecked: false,
+  },
+});
+```
+
+### 3、被选中数据扩展的数据结构
+>注意：expandedKeys必须是一个对象，不能是数组，否则无法联动
+```javascript
+const expandedKeys = ref({
+  '1': true,
+  "1-1": true,
+  "1-2": true,
+});
+```

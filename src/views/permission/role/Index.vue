@@ -140,7 +140,7 @@
               <Button
                 v-permission="`permission:user:more`"
                 icon="pi  pi-lock"
-                @click="moreToggle($event, data)"
+                @click="confirmAddPermission(data)"
                 outlined
                 rounded
                 severity="success"
@@ -262,48 +262,43 @@
     </template>
   </Dialog>
 
-  <!-- 分配角色 -->
-  <Drawer v-model:visible="visibleRight" style="width: 360px" position="right">
+  <!-- 分配权限 -->
+  <Drawer v-model:visible="visibleRight" style="width: 30%" position="right">
     <template #header>
       <div class="header">
-        <span>用户分配角色</span>
+        <span>角色分配权限</span>
       </div>
     </template>
 
     <template #default>
       <div class="role-container">
-        <Message>
+        <!-- <Message class="msg msg-one">
           <template #icon>
-            <span class="pi pi-user"></span>
+            <label>角色名称：</label>
           </template>
-          <span style="margin-left: 10px">
-            {{ tempUserName }}
+          <span style="fonw-weight: bold; font-size: 18px">
+            {{ tempRoleName }}
           </span>
-        </Message>
-        <Message>
-          <label>角色列表</label>
-          <div class="role-content">
-            <div v-for="(role, index) in roleList" :key="index">
-              <Checkbox
-                v-model="selectedRoleList"
-                :inputId="index"
-                name="role"
-                :value="role"
-              />
-              <label style="margin-left: 10px" :for="index">{{ role }}</label>
-            </div>
-          </div>
-        </Message>
-        <Button
-          size="small"
-          severity="success"
-          @click="handlerSaveRoleList"
-          label="确认"
-          style="width: 100%"
-          icon="pi fill-transparent pi-check"
-          :disabled="!selectedRoleList || !selectedRoleList.length"
-        />
+        </Message> -->
+        <div>
+          <Tree
+            v-model:selectionKeys="selectedMenuKeys"
+            v-model:expandedKeys="expandedKeys"
+            :value="treeData"
+            selectionMode="checkbox"
+          ></Tree>
+        </div>
       </div>
+    </template>
+
+    <template #footer>
+      <Button
+        size="small"
+        severity="success"
+        @click="handlerSavePermiss"
+        label="确认"
+        icon="pi fill-transparent pi-check"
+      />
     </template>
   </Drawer>
 </template>
@@ -317,11 +312,12 @@ import {
   updateRole,
   removeRole,
   batchDelete,
-  updateRoleStatus
+  updateRoleStatus,
 } from "@/api/role";
 import { queryDictLabel } from "@/api/dict_data";
 import { ROLE_CONSTANT } from "@/constant/dictType.js";
 import { toast } from "vue3-toastify";
+import { queryMenuList, queryRoleMenuList } from "@/api/menu";
 import { create_verify } from "vue-best-verify";
 
 //表单校验
@@ -359,17 +355,21 @@ const optionItems = ref([
   },
 ]);
 const selecteds = ref([]);
+const selectedMenuKeys = ref({});
+const expandedKeys = ref({});
 const addOrEditRoleDialog = ref(false);
 const deleteRoleDialog = ref(false);
 const visibleRight = ref(false);
 
 const role = ref({});
-const selectedRoleList = ref([]);
 const deleteRoleId = ref(null);
+const tempRoleName = ref("");
+const treeData = ref([]);
 
 onMounted(() => {
   getRoleList();
   getDictTypeStatus();
+  getAllMenuData();
 });
 
 //获取角色分页数据
@@ -513,6 +513,64 @@ const handleChangeStatus = (id) => {
   });
 };
 
+//分配权限弹框
+const confirmAddPermission = (role) => {
+  tempRoleName.value = role.name;
+  // getAllMenuData();
+  queryRoleMenuList(role.id).then((res) => {
+    if (res.code === 200) {
+      //封装数据结构
+      handlerDataStructure(res.data);
+      //默认全部展开
+      handlerExpandeAll();
+    }
+  });
+};
+
+//封装数据结构
+const handlerDataStructure = (data) => {
+  data.forEach((item) => {
+    selectedMenuKeys.value[item] = {
+      checked: true,
+      partialChecked: false,
+    };
+  });
+  visibleRight.value = true;
+};
+
+//获取菜单数据 抽屉树形数据
+const getAllMenuData = () => {
+  queryMenuList().then((res) => {
+    if (res.code === 200) {
+      treeData.value = res.data;
+    }
+  });
+};
+
+//默认全部展开
+const handlerExpandeAll = () => {
+  for (let node of treeData.value) {
+    expandNode(node);
+  }
+
+  expandedKeys.value = { ...expandedKeys.value };
+};
+
+const expandNode = (node) => {
+  if (node.children && node.children.length) {
+    expandedKeys.value[node.key] = true;
+
+    for (let child of node.children) {
+      expandNode(child);
+    }
+  }
+};
+
+//保存分配好的权限
+const handlerSavePermiss = () => {
+  console.log(selectedMenuKeys.value);
+};
+
 const handlerCancelDialog = () => {
   addOrEditRoleDialog.value = false;
   deleteRoleDialog.value = false;
@@ -615,20 +673,16 @@ const handlerCancel = () => {
   width: 250px;
 }
 
-.footer {
-  width: 100%;
+.role-container {
+  // background-color: #eee;
+  // height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  gap: 50px;
 }
 
-.footer button {
-  width: 250px;
-  margin: 15px 0 15px 0;
-}
-
-#small-help {
-  color: red;
-  font-size: 12px;
+.msg-one {
+  margin-top: 10px;
+  line-height: 40px;
 }
 </style>

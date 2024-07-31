@@ -372,16 +372,16 @@
 
     <template #default>
       <div class="role-container">
-        <Message>
+        <Message style="line-height: 30px">
           <template #icon>
-            <span class="pi pi-user"></span>
+            <label>用户名称：</label>
           </template>
-          <span style="margin-left: 10px">
+          <span style="fonw-weight: bold;font-size: 18px">
             {{ tempUserName }}
           </span>
         </Message>
         <Message>
-          <label>角色列表</label>
+          <label>角色列表：</label>
           <div class="role-content">
             <div v-for="(role, index) in roleList" :key="index">
               <Checkbox
