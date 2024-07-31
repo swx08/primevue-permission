@@ -38,7 +38,6 @@
                     :options="typeData"
                     optionLabel="label"
                     optionValue="value"
-                    showClear
                   />
                   <label for="dd-city">菜单类型</label>
                 </FloatLabel>
@@ -50,7 +49,6 @@
                     :options="statusData"
                     optionLabel="label"
                     optionValue="value"
-                    showClear
                   />
                   <label for="dd-city">菜单状态</label>
                 </FloatLabel>
@@ -148,7 +146,7 @@
             <ConfirmPopup></ConfirmPopup>
             <div>
               <Button
-                v-permission="`permission:user:more`"
+                v-permission="`permission:menu:add`"
                 icon="pi  pi-plus"
                 outlined
                 rounded
@@ -156,7 +154,7 @@
               />
               <Button
                 @click="handleEchoUser(data.id)"
-                v-permission="`permission:user:update`"
+                v-permission="`permission:menu:update`"
                 icon="pi pi-pencil"
                 outlined
                 rounded
@@ -164,7 +162,7 @@
                 style="margin: 0 10px"
               />
               <Button
-                v-permission="`permission:user:delete`"
+                v-permission="`permission:menu:delete`"
                 @click="confirmDeleteUser(data.id)"
                 icon="pi pi-trash"
                 outlined
@@ -183,7 +181,7 @@
 import { ref, onMounted } from "vue";
 import { MENU_CONSTANT } from "@/constant/dictType.js";
 import { queryDictLabel } from "@/api/dict_data";
-import { queryMenuList } from "@/api/menu";
+import { queryMenuList ,queryMenuListByLike} from "@/api/menu";
 
 const menu = ref();
 const loading = ref(false);
@@ -255,6 +253,32 @@ const getDictTypeStatus = () => {
 const toggle = (event) => {
   menu.value.toggle(event);
 };
+
+//搜索
+const handleSearch = () => {
+  if ((searchMenu.value.title !== "") || (searchMenu.value.type !== null) || (searchMenu.value.status !== null)) {
+    getMenuListByLike();
+  }
+}
+
+//模糊查询
+const getMenuListByLike = () => {
+  queryMenuListByLike(searchMenu.value).then((res) => {
+    if (res.code === 200) {
+      tableData.value = res.data;
+    }
+  })
+}
+
+//重置
+const handleReset = () => {
+  searchMenu.value = {
+    title: "",
+    type: null,
+    status: null
+  };
+  getAllMenuData();
+}
 </script>
 
 <style lang="scss" scoped>

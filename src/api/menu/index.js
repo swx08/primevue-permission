@@ -14,7 +14,7 @@ export function queryMenuList() {
 export function queryMenuListByLike(data) {
   return request({
     //模板字符串拼接参数
-    url: `${PREFIX}/list/like`,
+    url: `${PREFIX}/primeVue/list/like`,
     method: "POST",
     data: data,
   });

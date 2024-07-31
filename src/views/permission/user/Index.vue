@@ -48,7 +48,6 @@
                     :options="statusData"
                     optionLabel="label"
                     optionValue="value"
-                    showClear
                   />
                   <label for="dd-city">用户状态</label>
                 </FloatLabel>
