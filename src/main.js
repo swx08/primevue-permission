@@ -41,6 +41,7 @@ import { useThemeStore } from "@/stores/models/theme";
 //表单验证
 import { vue_best_verify } from "vue-best-verify";
 import "vue-best-verify/dist/style.css";
+import { multiply } from "lodash";
 
 const app = createApp(App);
 const persist = createPersistedState();
@@ -52,6 +53,7 @@ app.use(Vue3Toasity, {
   autoClose: 3000,
   transition: toast.TRANSITIONS.FLIP,
   position: toast.POSITION.TOP_CENTER,
+  multiple: false,
 });
 
 //安装自定义插件
