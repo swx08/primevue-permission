@@ -32,7 +32,7 @@ export function addMenu(data) {
 export function queryRoleMenuList(id) {
   return request({
     //模板字符串拼接参数
-    url: `${PREFIX}/query/role/permissions`,
+    url: `${PREFIX}/primeVue/query/role/permissions`,
     method: "GET",
     params: {
       id,

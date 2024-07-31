@@ -266,6 +266,7 @@
     <template #footer>
       <div class="footer">
         <Button
+          size="small"
           label="确认"
           severity="success"
           icon="pi pi-check"
@@ -275,6 +276,7 @@
           :loading="saveLoading"
         />
         <Button
+          size="small"
           @click="handlerCancel"
           label="取消"
           severity="danger"
@@ -330,7 +332,7 @@ import {
   addMenu,
   echoMenu,
   updateMenu,
-  removeMenu
+  removeMenu,
 } from "@/api/menu";
 import { create_verify } from "vue-best-verify";
 import { toast } from "vue3-toastify";
@@ -602,7 +604,7 @@ const handleAddMenu = (menu) => {
 const confirmDeleteMenu = (menu) => {
   deleteMenuId.value = menu.id;
   deleteMenuDialog.value = true;
-}
+};
 
 //删除菜单
 const handlerDeleteMenu = () => {
@@ -612,8 +614,8 @@ const handlerDeleteMenu = () => {
       getAllMenuData();
       deleteMenuDialog.value = false;
     }
-  })
-}
+  });
+};
 
 const cancelDalogOrDrawer = () => {
   addDirectDrawer.value = false;

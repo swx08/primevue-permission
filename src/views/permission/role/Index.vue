@@ -263,7 +263,12 @@
   </Dialog>
 
   <!-- 分配权限 -->
-  <Drawer v-model:visible="visibleRight" style="width: 30%" position="right">
+  <Drawer
+    @hide="handlerCancel"
+    v-model:visible="visibleRight"
+    style="width: 30%"
+    position="right"
+  >
     <template #header>
       <div class="header">
         <span>角色分配权限</span>
@@ -272,33 +277,45 @@
 
     <template #default>
       <div class="role-container">
-        <!-- <Message class="msg msg-one">
+        <Message class="msg msg-one">
           <template #icon>
             <label>角色名称：</label>
           </template>
-          <span style="fonw-weight: bold; font-size: 18px">
+          <span style="font-weight: bold; font-size: 18px">
             {{ tempRoleName }}
           </span>
-        </Message> -->
-        <div>
-          <Tree
-            v-model:selectionKeys="selectedMenuKeys"
-            v-model:expandedKeys="expandedKeys"
-            :value="treeData"
-            selectionMode="checkbox"
-          ></Tree>
-        </div>
+        </Message>
+        <Tree
+          v-model:selectionKeys="selectedMenuKeys"
+          v-model:expandedKeys="expandedKeys"
+          :value="treeData"
+          selectionMode="checkbox"
+        ></Tree>
       </div>
     </template>
 
     <template #footer>
-      <Button
-        size="small"
-        severity="success"
-        @click="handlerSavePermiss"
-        label="确认"
-        icon="pi fill-transparent pi-check"
-      />
+      <div class="footer">
+        <Button
+          size="small"
+          severity="success"
+          @click="handlerSavePermiss"
+          label="确认"
+          icon="pi fill-transparent pi-check"
+          :loading="saveLoading"
+          outlined
+          text
+        />
+        <Button
+          size="small"
+          severity="danger"
+          @click="handlerCancel"
+          label="取消"
+          outlined
+          text
+          icon="pi pi-times"
+        />
+      </div>
     </template>
   </Drawer>
 </template>
@@ -313,6 +330,7 @@ import {
   removeRole,
   batchDelete,
   updateRoleStatus,
+  savePermission,
 } from "@/api/role";
 import { queryDictLabel } from "@/api/dict_data";
 import { ROLE_CONSTANT } from "@/constant/dictType.js";
@@ -363,6 +381,7 @@ const visibleRight = ref(false);
 
 const role = ref({});
 const deleteRoleId = ref(null);
+const tempRoleId = ref(null);
 const tempRoleName = ref("");
 const treeData = ref([]);
 
@@ -515,14 +534,16 @@ const handleChangeStatus = (id) => {
 
 //分配权限弹框
 const confirmAddPermission = (role) => {
+  if (role.code === "admin") {
+    toast.error("管理员角色不允许修改！");
+    return;
+  }
   tempRoleName.value = role.name;
-  // getAllMenuData();
+  tempRoleId.value = role.id;
   queryRoleMenuList(role.id).then((res) => {
     if (res.code === 200) {
       //封装数据结构
       handlerDataStructure(res.data);
-      //默认全部展开
-      handlerExpandeAll();
     }
   });
 };
@@ -534,6 +555,7 @@ const handlerDataStructure = (data) => {
       checked: true,
       partialChecked: false,
     };
+    expandedKeys.value[item] = true;
   });
   visibleRight.value = true;
 };
@@ -547,33 +569,36 @@ const getAllMenuData = () => {
   });
 };
 
-//默认全部展开
-const handlerExpandeAll = () => {
-  for (let node of treeData.value) {
-    expandNode(node);
-  }
-
-  expandedKeys.value = { ...expandedKeys.value };
-};
-
-const expandNode = (node) => {
-  if (node.children && node.children.length) {
-    expandedKeys.value[node.key] = true;
-
-    for (let child of node.children) {
-      expandNode(child);
-    }
-  }
-};
-
 //保存分配好的权限
 const handlerSavePermiss = () => {
-  console.log(selectedMenuKeys.value);
+  if (Object.keys(selectedMenuKeys.value).length !== 0) {
+    saveLoading.value = true;
+    //取出键值
+    const keysArray = Object.keys(selectedMenuKeys.value);
+    //转换为数字类型
+    const finalResult = keysArray.map(Number);
+    savePermission(tempRoleId.value, finalResult).then((res) => {
+      if (res.code === 200) {
+        toast.success("分配成功！");
+        visibleRight.value = false;
+        selectedMenuKeys.value = {};
+        tempRoleId.value = null;
+        tempRoleName.value = null;
+        expandedKeys.value = {};
+        saveLoading.value = false;
+      } else {
+        saveLoading.value = false;
+      }
+    });
+  } else {
+    toast.error("请选择权限！");
+  }
 };
 
 const handlerCancelDialog = () => {
   addOrEditRoleDialog.value = false;
   deleteRoleDialog.value = false;
+  visibleRight.value = false;
 };
 
 const handlerSetValue = () => {
@@ -583,6 +608,10 @@ const handlerSetValue = () => {
     code: "",
   };
   deleteRoleId.value = null;
+  expandedKeys.value = {};
+  selectedMenuKeys.value = {};
+  tempRoleId.value = null;
+  tempRoleName.value = null;
 };
 
 const handlerCancel = () => {
@@ -674,15 +703,18 @@ const handlerCancel = () => {
 }
 
 .role-container {
-  // background-color: #eee;
-  // height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 50px;
+  gap: 20px;
 }
 
 .msg-one {
   margin-top: 10px;
   line-height: 40px;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
 }
 </style>
