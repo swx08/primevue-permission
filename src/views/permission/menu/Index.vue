@@ -148,11 +148,20 @@
             <ConfirmPopup></ConfirmPopup>
             <div>
               <Button
+                v-permission="`permission:user:more`"
+                icon="pi  pi-plus"
+                outlined
+                rounded
+                severity="success"
+              />
+              <Button
                 @click="handleEchoUser(data.id)"
                 v-permission="`permission:user:update`"
                 icon="pi pi-pencil"
                 outlined
                 rounded
+                severity="info"
+                style="margin: 0 10px"
               />
               <Button
                 v-permission="`permission:user:delete`"
@@ -161,24 +170,7 @@
                 outlined
                 rounded
                 severity="danger"
-                style="margin: 0 10px"
               />
-              <Button
-                v-permission="`permission:user:more`"
-                icon="pi  pi-ellipsis-h"
-                @click="moreToggle($event, data)"
-                outlined
-                rounded
-                severity="info"
-              />
-              <Menu ref="moreMenu" id="config_menu" :model="moreItems" popup>
-                <template #item="{ item, props }">
-                  <a @click="handlerMoreOption(item)" v-bind="props.action">
-                    <span :class="item.icon" />
-                    <span>{{ item.label }}</span>
-                  </a>
-                </template>
-              </Menu>
             </div>
           </template>
         </Column>
@@ -193,15 +185,24 @@ import { MENU_CONSTANT } from "@/constant/dictType.js";
 import { queryDictLabel } from "@/api/dict_data";
 import { queryMenuList } from "@/api/menu";
 
+const menu = ref();
 const loading = ref(false);
 const tableData = ref([]);
 const optionItems = ref([
   {
     label: "新增",
     icon: "pi pi-plus",
-    // command: () => {
-    //   addOrEditUserDialog.value = true;
-    // },
+    command: () => {
+       addOrEditUserDialog.value = true;
+     }
+  },
+  {
+    label: "导入",
+    icon: "pi pi-file-import",
+  },
+  {
+    label: "导出",
+    icon: "pi pi-file-export",
   },
 ]);
 const searchMenu = ref({
@@ -248,6 +249,11 @@ const getDictTypeStatus = () => {
       statusData.value = res.data;
     }
   });
+};
+
+//添加菜单数据
+const toggle = (event) => {
+  menu.value.toggle(event);
 };
 </script>
 
