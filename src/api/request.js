@@ -25,17 +25,14 @@ requests.interceptors.request.use((config) => {
 requests.interceptors.response.use(
   (response) => {
     //响应成功的回调
+    let userStore = useUserStore();
     const res = response.data;
     const code = res.code;
     if (code !== 200) {
       toast.error(res.message);
     }
-    if (code === 403) {
-      // authorizationStore.removeAuthorization();
-      router.push("/login");
-    }
-    if (code === 1002) {
-      // authorizationStore.removeAuthorization();
+    if (code === 405) {
+      userStore.logout();
       router.push("/login");
     }
     return res;

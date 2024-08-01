@@ -101,7 +101,7 @@
           header="编号"
           sortable
           frozen
-          style="min-width: 8rem"
+          style="min-width: 6rem"
         >
         </Column>
         <Column
@@ -139,6 +139,7 @@
                 icon="pi pi-pencil"
                 outlined
                 rounded
+                severity="info"
               />
               <Button
                 v-permission="`permission:user:delete`"
@@ -155,7 +156,7 @@
                 @click="moreToggle($event, data)"
                 outlined
                 rounded
-                severity="info"
+                severity="success"
               />
               <Menu ref="moreMenu" id="config_menu" :model="moreItems" popup>
                 <template #item="{ item, props }">
@@ -698,6 +699,7 @@ const handlerDelete = () => {
         toast.success("删除成功！");
         getUserList();
         deleteUserDialog.value = false;
+        userId.value = null;
       }
     });
   }

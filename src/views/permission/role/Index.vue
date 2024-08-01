@@ -138,20 +138,11 @@
           <template #body="{ data }">
             <div>
               <Button
-                v-permission="`permission:user:more`"
-                icon="pi  pi-lock"
-                @click="confirmAddPermission(data)"
-                outlined
-                rounded
-                severity="success"
-              />
-              <Button
                 @click="handleEchoRole(data.id)"
                 v-permission="`permission:role:update`"
                 icon="pi pi-pencil"
                 outlined
                 rounded
-                style="margin: 0 10px"
                 severity="info"
               />
               <Button
@@ -161,6 +152,15 @@
                 outlined
                 rounded
                 severity="danger"
+                style="margin: 0 10px"
+              />
+              <Button
+                v-permission="`permission:user:more`"
+                icon="pi  pi-lock"
+                @click="confirmAddPermission(data)"
+                outlined
+                rounded
+                severity="success"
               />
             </div>
           </template>
@@ -515,6 +515,7 @@ const handlerDelete = () => {
         toast.success("删除成功！");
         getRoleList();
         deleteRoleDialog.value = false;
+        deleteRoleId.value = null;
       }
     });
   }
@@ -714,12 +715,13 @@ const handlerCancel = () => {
 
 .add-footer {
   width: 100%;
-  margin-top: 20px;
+  margin-top: 10px;
   display: flex;
   justify-content: center;
 }
 
 .add-footer button{
   width: 250px;
+  margin-bottom: 20px;
 }
 </style>
