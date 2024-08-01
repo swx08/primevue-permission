@@ -76,6 +76,7 @@
                   :disabled="!selecteds || !selecteds.length"
                   label="批量删除"
                   outlined
+                  v-permission="`permission:user:delete`"
                   size="small"
                   icon="pi pi-trash"
                   severity="danger"
@@ -103,6 +104,9 @@
           frozen
           style="min-width: 6rem"
         >
+          <template #body="{ data }">
+            <Tag severity="info" :value="data.id"></Tag>
+          </template>
         </Column>
         <Column
           header="用户名"
@@ -110,12 +114,21 @@
           field="username"
           style="min-width: 10rem"
         >
+          <template #body="{ data }">
+            <Tag severity="info" :value="data.username"></Tag>
+          </template>
         </Column>
         <Column header="手机号" field="phone" sortable style="min-width: 12rem">
+          <template #body="{ data }">
+            <Tag severity="info" :value="data.phone"></Tag>
+          </template>
         </Column>
         <Column field="email" header="邮箱" sortable style="min-width: 15rem">
+          <template #body="{ data }">
+            <Tag severity="info" :value="data.email"></Tag>
+          </template>
         </Column>
-        <Column header="状态" field="status" style="min-width: 8rem">
+        <Column header="状态" sortable field="status" style="min-width: 8rem">
           <template #body="{ data }">
             <ToggleSwitch
               @change="handleChangeStatus(data.id)"
@@ -129,6 +142,9 @@
           header="创建时间"
           style="min-width: 15rem"
         >
+          <template #body="{ data }">
+            <Tag severity="info" :value="data.createTime"></Tag>
+          </template>
         </Column>
         <Column header="操作" style="min-width: 12rem" frozen>
           <template #body="{ data }">
@@ -334,7 +350,12 @@
   </Dialog>
 
   <!-- 分配角色 -->
-  <Drawer @hide="cancelDelete" v-model:visible="visibleRight" style="width: 360px" position="right">
+  <Drawer
+    @hide="cancelDelete"
+    v-model:visible="visibleRight"
+    style="width: 360px"
+    position="right"
+  >
     <template #header>
       <div class="header">
         <span>用户分配角色</span>
@@ -343,7 +364,7 @@
 
     <template #default>
       <div class="role-container">
-        <Message style="line-height: 40px;margin-top: 10px">
+        <Message style="line-height: 40px; margin-top: 10px">
           <template #icon>
             <label>用户名称：</label>
           </template>
@@ -828,7 +849,7 @@ const handlerDelete = () => {
   margin: 0 30px 20px 0;
 }
 
-.permiss-footer{
+.permiss-footer {
   display: flex;
   justify-content: space-between;
 }

@@ -91,6 +91,9 @@
           expander
           style="min-width: 8rem"
         >
+          <template #body="{ node }">
+            <Tag severity="info" :value="node.data.id"></Tag>
+          </template>
         </Column>
         <Column
           header="组件名称"
@@ -98,6 +101,9 @@
           field="name"
           style="min-width: 10rem"
         >
+          <template #body="{ node }">
+            <Tag v-if="node.data.name" severity="info" :value="node.data.name"></Tag>
+          </template>
         </Column>
         <Column
           header="菜单名称"
@@ -105,6 +111,9 @@
           sortable
           style="min-width: 10rem"
         >
+          <template #body="{ node }">
+            <Tag severity="info" :value="node.data.title"></Tag>
+          </template>
         </Column>
         <Column field="type" header="类型" sortable style="min-width: 8rem">
           <template #body="{ node }">
@@ -124,6 +133,9 @@
           field="permission"
           style="min-width: 15rem"
         >
+          <template #body="{ node }">
+            <Tag v-if="node.data.permission" severity="info" :value="node.data.permission"></Tag>
+          </template>
         </Column>
         <Column
           field="component"
@@ -131,6 +143,9 @@
           header="组件路径"
           style="min-width: 16rem"
         >
+          <template #body="{ node }">
+            <Tag v-if="node.data.component" severity="info" :value="node.data.component"></Tag>
+          </template>
         </Column>
         <Column field="status" sortable header="状态" style="min-width: 8rem">
           <template #body="{ node }">

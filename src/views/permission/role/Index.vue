@@ -104,6 +104,9 @@
           frozen
           style="min-width: 8rem"
         >
+          <template #body="{ data }">
+            <Tag severity="info" :value="data.id"></Tag>
+          </template>
         </Column>
         <Column
           header="角色名称"
@@ -111,6 +114,9 @@
           field="name"
           style="min-width: 10rem"
         >
+          <template #body="{ data }">
+            <Tag severity="info" :value="data.name"></Tag>
+          </template>
         </Column>
         <Column
           header="角色标识"
@@ -118,8 +124,11 @@
           sortable
           style="min-width: 12rem"
         >
+          <template #body="{ data }">
+            <Tag severity="info" :value="data.code"></Tag>
+          </template>
         </Column>
-        <Column header="状态" field="status" style="min-width: 8rem">
+        <Column header="状态" sortable field="status" style="min-width: 8rem">
           <template #body="{ data }">
             <ToggleSwitch
               @change="handleChangeStatus(data.id)"
@@ -133,6 +142,9 @@
           header="创建时间"
           style="min-width: 15rem"
         >
+          <template #body="{ data }">
+            <Tag severity="info" :value="data.createTime"></Tag>
+          </template>
         </Column>
         <Column header="操作" style="min-width: 12rem" frozen>
           <template #body="{ data }">
@@ -155,7 +167,7 @@
                 style="margin: 0 10px"
               />
               <Button
-                v-permission="`permission:user:more`"
+                v-permission="`permission:role:assign`"
                 icon="pi  pi-lock"
                 @click="confirmAddPermission(data)"
                 outlined
@@ -720,7 +732,7 @@ const handlerCancel = () => {
   justify-content: center;
 }
 
-.add-footer button{
+.add-footer button {
   width: 250px;
   margin-bottom: 20px;
 }

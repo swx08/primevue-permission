@@ -58,7 +58,7 @@
               <div class="panel-right">
                 <Button
                   @click="handleSearch"
-                  v-permission="`permission:role:query`"
+                  v-permission="`system:dict:query`"
                   label="查询"
                   outlined
                   size="small"
@@ -68,7 +68,7 @@
                 />
                 <Button
                   @click="handleReset"
-                  v-permission="`permission:role:reset`"
+                  v-permission="`system:dict:reset`"
                   label="重置"
                   outlined
                   size="small"
@@ -83,7 +83,7 @@
                   icon="pi pi-trash"
                   severity="danger"
                   @click="confirmDeleteDict"
-                  v-permission="`permission:role:delete`"
+                  v-permission="`system:dict:delete`"
                 />
               </div>
             </div>
@@ -107,6 +107,9 @@
           frozen
           style="min-width: 6rem"
         >
+        <template #body="{ data }">
+            <Tag severity="info" :value="data.id"></Tag>
+          </template>
         </Column>
         <Column
           header="字典名称"
@@ -114,6 +117,9 @@
           field="name"
           style="min-width: 12rem"
         >
+        <template #body="{ data }">
+            <Tag severity="info" :value="data.name"></Tag>
+          </template>
         </Column>
         <Column
           header="字典类型"
@@ -125,7 +131,7 @@
             <Button text link :label="data.type" @click="handlerToData(data)" />
           </template>
         </Column>
-        <Column header="状态" field="status" style="min-width: 8rem">
+        <Column header="状态" sortable field="status" style="min-width: 8rem">
           <template #body="{ data }">
             <ToggleSwitch
               @change="handleChangeStatus(data.id)"
@@ -134,6 +140,9 @@
           </template>
         </Column>
         <Column field="remark" sortable header="备注" style="min-width: 15rem">
+          <template #body="{ data }">
+            <Tag severity="info" :value="data.remark"></Tag>
+          </template>
         </Column>
         <Column
           field="createTime"
@@ -141,6 +150,9 @@
           header="创建时间"
           style="min-width: 15rem"
         >
+          <template #body="{ data }">
+            <Tag severity="info" :value="data.createTime"></Tag>
+          </template>
         </Column>
         <Column
           header="操作"
@@ -152,7 +164,7 @@
             <div>
               <Button
                 @click="handleEchoDict(data.id)"
-                v-permission="`permission:role:update`"
+                v-permission="`system:dict:update`"
                 icon="pi pi-pencil"
                 outlined
                 rounded
@@ -160,7 +172,7 @@
                 severity="info"
               />
               <Button
-                v-permission="`permission:role:delete`"
+                v-permission="`system:dict:delete`"
                 @click="confirmDeleteDict(data.id)"
                 icon="pi pi-trash"
                 outlined
