@@ -191,7 +191,7 @@
     <template #header>
       <div class="form-header">
         <div class="header">
-          <span>{{ user.id === null ? "新增用户" : "修改用户" }}</span>
+          <span>{{ user.id === undefined ? "新增用户" : "修改用户" }}</span>
           <Button
             @click="cancelDelete"
             icon="pi pi-times"
@@ -202,15 +202,16 @@
         </div>
       </div>
     </template>
-    <div class="form-body">
+    <div class="form-body" v-verify="verify">
       <div>
         <label>用户名</label>
-        <InputText placeholder="用户名" v-model="user.username" />
-        <small v-if="validate.username" id="small-help">{{
-          validate.username
-        }}</small>
+        <InputText
+          verify="required"
+          placeholder="用户名"
+          v-model="user.username"
+        />
       </div>
-      <div v-if="user.id === null">
+      <div v-if="user.id === undefined">
         <label>密码</label>
         <Password
           placeholder="密码"
@@ -220,24 +221,26 @@
           strongLabel="强"
           v-model="user.password"
           inputId="password"
+          verify="required"
         />
-        <small v-if="validate.password" id="small-help">{{
-          validate.password
-        }}</small>
       </div>
       <div>
         <label>手机号</label>
-        <InputText placeholder="手机号" id="phone" v-model="user.phone" />
-        <small v-if="validate.phone" id="small-help">{{
-          validate.phone
-        }}</small>
+        <InputText
+          verify="required,phone"
+          placeholder="手机号"
+          id="phone"
+          v-model="user.phone"
+        />
       </div>
       <div>
         <label>邮箱</label>
-        <InputText id="email" placeholder="邮箱" v-model="user.email" />
-        <small v-if="validate.email" id="small-help">{{
-          validate.email
-        }}</small>
+        <InputText
+          verify="required,email"
+          id="email"
+          placeholder="邮箱"
+          v-model="user.email"
+        />
       </div>
     </div>
     <template #footer>
@@ -249,39 +252,6 @@
           @click="handlerAddOrEditUser"
         />
       </div>
-    </template>
-  </Dialog>
-
-  <!-- 批量删除用户弹框 -->
-  <Dialog
-    :closable="false"
-    v-model:visible="deleteUsersDialog"
-    :style="{ width: '380px' }"
-    header="删除用户"
-    :modal="true"
-  >
-    <div>
-      <i class="pi pi-exclamation-triangle icon" />
-      <span>您确认要删除用户数据 ? </span>
-    </div>
-    <template #footer>
-      <Button
-        label="取消"
-        outlined
-        size="small"
-        icon="pi pi-times"
-        text
-        @click="cancelDelete"
-      />
-      <Button
-        label="确认"
-        severity="danger"
-        outlined
-        size="small"
-        icon="pi pi-check"
-        text
-        @click="handlerBatchDelete"
-      />
     </template>
   </Dialog>
 
@@ -363,7 +333,7 @@
   </Dialog>
 
   <!-- 分配角色 -->
-  <Drawer v-model:visible="visibleRight" style="width: 360px" position="right">
+  <Drawer @hide="cancelDelete" v-model:visible="visibleRight" style="width: 360px" position="right">
     <template #header>
       <div class="header">
         <span>用户分配角色</span>
@@ -372,11 +342,11 @@
 
     <template #default>
       <div class="role-container">
-        <Message style="line-height: 30px">
+        <Message style="line-height: 40px;margin-top: 10px">
           <template #icon>
             <label>用户名称：</label>
           </template>
-          <span style="fonw-weight: bold;font-size: 18px">
+          <span style="font-weight: bold; font-size: 18px">
             {{ tempUserName }}
           </span>
         </Message>
@@ -394,14 +364,26 @@
             </div>
           </div>
         </Message>
+      </div>
+    </template>
+    <template #footer>
+      <div class="permiss-footer">
         <Button
           size="small"
           severity="success"
           @click="handlerSaveRoleList"
           label="确认"
-          style="width: 100%"
           icon="pi fill-transparent pi-check"
+          outlined
           :disabled="!selectedRoleList || !selectedRoleList.length"
+        />
+        <Button
+          size="small"
+          severity="danger"
+          @click="cancelDelete"
+          label="取消"
+          outlined
+          icon="pi pi-times"
         />
       </div>
     </template>
@@ -426,7 +408,12 @@ import { queryRoleList } from "@/api/role";
 import { USER_CONSTANT } from "@/constant/dictType.js";
 import { queryDictLabel } from "@/api/dict_data";
 import { toast } from "vue3-toastify";
+import { create_verify } from "vue-best-verify";
 
+//表单校验
+const verify = create_verify({
+  border_hint: false,
+});
 const statusData = ref([]);
 const menu = ref(null);
 const moreMenu = ref(null);
@@ -479,19 +466,7 @@ const resetUserObj = ref({
   id: null,
   password: "",
 });
-const user = ref({
-  id: null,
-  username: "",
-  password: "",
-  phone: "",
-  email: "",
-});
-const validate = ref({
-  username: "",
-  phone: "",
-  email: "",
-  password: "",
-});
+const user = ref({});
 const selectedRoleList = ref([]);
 const roleList = ref([]);
 const tempUserName = ref("");
@@ -615,17 +590,18 @@ const handleResetPwd = () => {
 
 //新增、修改用户
 const handlerAddOrEditUser = () => {
-  user.value.username = user.value.username.trim();
-  user.value.phone = user.value.phone.trim();
-  user.value.email = user.value.email.trim();
-  if (user.value.password) {
-    user.value.password = user.value.password.trim();
-  }
-
-  if (user.id === null) {
-    addUser(user.value);
-  } else {
-    editUser(user.value);
+  if (verify.do_verify()) {
+    user.value.username = user.value.username.trim();
+    user.value.phone = user.value.phone.trim();
+    user.value.email = user.value.email.trim();
+    if (user.value.password) {
+      user.value.password = user.value.password.trim();
+    }
+    if (user.value.id === undefined) {
+      addUser(user.value);
+    } else {
+      editUser(user.value);
+    }
   }
 };
 
@@ -636,10 +612,7 @@ const addUser = (item) => {
       toast.success("新增成功！");
       addOrEditUserDialog.value = false;
       getUserList();
-    } else {
-      if (res.data !== null) {
-        validate.value = res.data;
-      }
+      user.value = {};
     }
   });
 };
@@ -651,10 +624,7 @@ const editUser = (item) => {
       toast.success("修改成功！");
       addOrEditUserDialog.value = false;
       getUserList();
-    } else {
-      if (res.data !== null) {
-        validate.value = res.data;
-      }
+      user.value = {};
     }
   });
 };
@@ -679,42 +649,23 @@ const handleChangeStatus = (id) => {
 };
 
 const deleteDialog = () => {
-  deleteUsersDialog.value = true;
+  deleteUserDialog.value = true;
 };
 
-// 批量删除用户
-const handlerBatchDelete = () => {
-  if (selecteds.value.length > 0) {
-    //过滤出用户id
-    const userIdList = selecteds.value.map((item) => item.id);
-    batchDelete(userIdList).then((res) => {
-      if (res.code === 200) {
-        toast.success("删除成功！");
-        getUserList();
-        deleteUsersDialog.value = false;
-      }
-    });
-  }
-};
 const cancelDalog = () => {
   deleteUsersDialog.value = false;
   deleteUserDialog.value = false;
   resetPwdDialog.value = false;
   addOrEditUserDialog.value = false;
+  visibleRight.value = false;
 };
 
 const handlerSetValue = () => {
-  user.value.id = null;
-  user.value.username = "";
-  user.value.password = "";
-  user.value.phone = "";
-  user.value.email = "";
+  user.value = {};
   resetUserObj.value.id = null;
   resetUserObj.value.password = "";
-  validate.value.username = "";
-  validate.value.password = "";
-  validate.value.phone = "";
-  validate.value.email = "";
+  selectedRoleList.value = [];
+  tempUserName.value = "";
 };
 //取消删除用户
 const cancelDelete = () => {
@@ -722,20 +673,34 @@ const cancelDelete = () => {
   handlerSetValue();
 };
 
-//删除用户
+//删除用户弹框确认
 const confirmDeleteUser = (id) => {
   deleteUserDialog.value = true;
   userId.value = id;
 };
 
+//删除用户
 const handlerDelete = () => {
-  deleteUser(userId.value).then((res) => {
-    if (res.code === 200) {
-      toast.success("删除成功！");
-      getUserList();
-      deleteUserDialog.value = false;
-    }
-  });
+  if (selecteds.value.length > 0) {
+    //过滤出用户id
+    const userIdList = selecteds.value.map((item) => item.id);
+    batchDelete(userIdList).then((res) => {
+      if (res.code === 200) {
+        toast.success("删除成功！");
+        getUserList();
+        deleteUserDialog.value = false;
+        selecteds.value = [];
+      }
+    });
+  } else {
+    deleteUser(userId.value).then((res) => {
+      if (res.code === 200) {
+        toast.success("删除成功！");
+        getUserList();
+        deleteUserDialog.value = false;
+      }
+    });
+  }
 };
 </script>
 
@@ -844,17 +809,10 @@ const handlerDelete = () => {
   margin: 15px 0 15px 0;
 }
 
-#small-help {
-  color: red;
-  font-size: 12px;
-}
-
 .role-container {
-  height: 60vh;
-  justify-content: center;
   display: flex;
   flex-direction: column;
-  gap: 60px;
+  gap: 40px;
 }
 
 .role-content {
@@ -866,5 +824,10 @@ const handlerDelete = () => {
 .role-content > div {
   display: flex;
   margin: 0 30px 20px 0;
+}
+
+.permiss-footer{
+  display: flex;
+  justify-content: space-between;
 }
 </style>

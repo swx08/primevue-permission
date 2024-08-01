@@ -626,6 +626,20 @@ const handlerSetValue = () => {
   menuShow.value = true;
   btnShow.value = true;
   deleteMenuId.value = null;
+  typeData.value = [
+    {
+      label: "目录",
+      value: 0,
+    },
+    {
+      label: "菜单",
+      value: 1,
+    },
+    {
+      label: "按钮",
+      value: 2,
+    },
+  ];
 };
 //所有的弹窗以及抽屉的关闭方法
 const handlerCancel = () => {
@@ -713,7 +727,7 @@ input[type="text"] {
 
 .msg-tip {
   margin-bottom: 30px;
-  line-height: 38px;
+  line-height: 40px;
   padding-top: 10px;
 }
 </style>

@@ -600,11 +600,7 @@ const handlerCancelDialog = () => {
 };
 
 const handlerSetValue = () => {
-  role.value = {
-    id: null,
-    name: "",
-    code: "",
-  };
+  role.value = {};
   deleteRoleId.value = null;
   expandedKeys.value = {};
   selectedMenuKeys.value = {};
