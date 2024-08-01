@@ -344,7 +344,7 @@ const verify = create_verify({
 });
 const menu = ref();
 const saveLoading = ref(false);
-const loading = ref(false);
+const loading = ref(true);
 const tableData = ref([]);
 const typeData = ref([
   {

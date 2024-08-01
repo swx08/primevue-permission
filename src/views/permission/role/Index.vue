@@ -344,7 +344,7 @@ const verify = create_verify({
 });
 const statusData = ref([]);
 const menu = ref(null);
-const loading = ref(false);
+const loading = ref(true);
 const tableData = ref([]);
 const pageNo = ref(1);
 const pageSize = ref(10);
