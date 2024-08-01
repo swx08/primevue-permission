@@ -150,12 +150,21 @@
           <template #body="{ data }">
             <div>
               <Button
+                v-permission="`permission:role:assign`"
+                icon="pi  pi-lock"
+                @click="confirmAddPermission(data)"
+                outlined
+                rounded
+                severity="success"
+              />
+              <Button
                 @click="handleEchoRole(data.id)"
                 v-permission="`permission:role:update`"
                 icon="pi pi-pencil"
                 outlined
                 rounded
                 severity="info"
+                style="margin: 0 10px"
               />
               <Button
                 v-permission="`permission:role:delete`"
@@ -164,15 +173,6 @@
                 outlined
                 rounded
                 severity="danger"
-                style="margin: 0 10px"
-              />
-              <Button
-                v-permission="`permission:role:assign`"
-                icon="pi  pi-lock"
-                @click="confirmAddPermission(data)"
-                outlined
-                rounded
-                severity="success"
               />
             </div>
           </template>
@@ -193,35 +193,22 @@
   <!-- 新增、修改角色弹框 -->
   <Dialog
     v-model:visible="addOrEditRoleDialog"
-    :style="{ width: '380px' }"
+    :style="{ width: '40%' }"
     :modal="true"
-    :closable="false"
+    :header="role.id === undefined ? '新增角色' : '修改角色'"
+    @hide="handlerCancel"
   >
-    <template #header>
-      <div class="form-header">
-        <div class="header">
-          <span>{{ role.id === undefined ? "新增角色" : "修改角色" }}</span>
-          <Button
-            @click="handlerCancel"
-            icon="pi pi-times"
-            rounded
-            severity="secondary"
-            text
-          />
-        </div>
-      </div>
-    </template>
     <div class="form-container" v-verify="verify">
-      <div class="form-row">
-        <label>角色名称</label>
+      <div class="form-group">
+        <label class="form-label">角色名称</label>
         <InputText
           verify="required"
           placeholder="角色名称"
           v-model="role.name"
         />
       </div>
-      <div class="form-row">
-        <label>角色标识</label>
+      <div class="form-group">
+        <label class="form-label">角色标识</label>
         <InputText
           verify="required"
           placeholder="角色标识"
@@ -230,12 +217,22 @@
       </div>
     </div>
     <template #footer>
-      <div class="add-footer">
+      <div class="footer">
         <Button
           label="确认"
           severity="success"
           icon="pi pi-check"
           @click="handlerAddOrEditRole"
+          outlined
+          size="small"
+        />
+        <Button
+          label="取消"
+          severity="warn"
+          icon="pi pi-times"
+          @click="handlerCancel"
+          outlined
+          size="small"
         />
       </div>
     </template>
@@ -280,13 +277,8 @@
     v-model:visible="visibleRight"
     style="width: 30%"
     position="right"
+    header="角色分配权限"
   >
-    <template #header>
-      <div class="header">
-        <span>角色分配权限</span>
-      </div>
-    </template>
-
     <template #default>
       <div class="role-container">
         <Message class="msg msg-one">
@@ -319,7 +311,7 @@
         />
         <Button
           size="small"
-          severity="danger"
+          severity="warn"
           @click="handlerCancel"
           label="取消"
           outlined
@@ -671,41 +663,22 @@ const handlerCancel = () => {
   font-size: 1.5rem;
 }
 
-.form-header {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.form-header .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 250px;
-  line-height: 30px;
-}
-
-.header span {
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
+/* 定义表单容器的样式 */
 .form-container {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   align-items: center;
-  justify-content: center;
-  gap: 30px;
+  gap: 10px 50px;
 }
-
-.form-row {
+.form-group {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  margin-bottom: 25px;
 }
 
-.form-row input {
+:deep(.p-inputtext) {
   width: 250px;
 }
 
@@ -721,19 +694,9 @@ const handlerCancel = () => {
 }
 
 .footer {
-  display: flex;
-  justify-content: space-between;
-}
-
-.add-footer {
   width: 100%;
-  margin-top: 10px;
   display: flex;
-  justify-content: center;
-}
-
-.add-footer button {
-  width: 250px;
-  margin-bottom: 20px;
+  align-items: center;
+  justify-content: space-between;
 }
 </style>

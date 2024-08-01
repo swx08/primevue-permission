@@ -146,26 +146,9 @@
             <Tag severity="info" :value="data.createTime"></Tag>
           </template>
         </Column>
-        <Column header="操作" style="min-width: 12rem" frozen>
+        <Column header="操作" style="min-width: 12rem" frozen alignFrozen="right">
           <template #body="{ data }">
             <div>
-              <Button
-                @click="handleEchoUser(data.id)"
-                v-permission="`permission:user:update`"
-                icon="pi pi-pencil"
-                outlined
-                rounded
-                severity="info"
-              />
-              <Button
-                v-permission="`permission:user:delete`"
-                @click="confirmDeleteUser(data.id)"
-                icon="pi pi-trash"
-                outlined
-                rounded
-                severity="danger"
-                style="margin: 0 10px"
-              />
               <Button
                 v-permission="`permission:user:more`"
                 icon="pi  pi-ellipsis-h"
@@ -182,6 +165,23 @@
                   </a>
                 </template>
               </Menu>
+              <Button
+                @click="handleEchoUser(data.id)"
+                v-permission="`permission:user:update`"
+                icon="pi pi-pencil"
+                outlined
+                rounded
+                severity="info"
+                style="margin: 0 10px"
+              />
+              <Button
+                v-permission="`permission:user:delete`"
+                @click="confirmDeleteUser(data.id)"
+                icon="pi pi-trash"
+                outlined
+                rounded
+                severity="danger"
+              />
             </div>
           </template>
         </Column>
@@ -201,35 +201,22 @@
   <!-- 新增、修改用户弹框 -->
   <Dialog
     v-model:visible="addOrEditUserDialog"
-    :style="{ width: '380px' }"
+    :style="{ width: '40%' }"
     :modal="true"
-    :closable="false"
+    @hide="handlerCancel"
+    :header="user.id === undefined ? '新增用户' : '修改用户'"
   >
-    <template #header>
-      <div class="form-header">
-        <div class="header">
-          <span>{{ user.id === undefined ? "新增用户" : "修改用户" }}</span>
-          <Button
-            @click="cancelDelete"
-            icon="pi pi-times"
-            rounded
-            severity="secondary"
-            text
-          />
-        </div>
-      </div>
-    </template>
-    <div class="form-body" v-verify="verify">
-      <div>
-        <label>用户名</label>
+    <div class="form-container" v-verify="verify">
+      <div class="form-group">
+        <label class="form-label">用户名</label>
         <InputText
           verify="required"
           placeholder="用户名"
           v-model="user.username"
         />
       </div>
-      <div v-if="user.id === undefined">
-        <label>密码</label>
+      <div class="form-group" v-if="user.id === undefined">
+        <label class="form-label">密码</label>
         <Password
           placeholder="密码"
           promptLabel="密码强度"
@@ -241,8 +228,8 @@
           verify="required"
         />
       </div>
-      <div>
-        <label>手机号</label>
+      <div class="form-group">
+        <label class="form-label">手机号</label>
         <InputText
           verify="required,phone"
           placeholder="手机号"
@@ -250,8 +237,8 @@
           v-model="user.phone"
         />
       </div>
-      <div>
-        <label>邮箱</label>
+      <div class="form-group">
+        <label class="form-label">邮箱</label>
         <InputText
           verify="required,email"
           id="email"
@@ -267,6 +254,16 @@
           severity="success"
           icon="pi pi-check"
           @click="handlerAddOrEditUser"
+          outlined
+          size="small"
+        />
+        <Button
+          label="取消"
+          severity="warn"
+          icon="pi pi-times"
+          @click="handlerCancel"
+          outlined
+          size="small"
         />
       </div>
     </template>
@@ -291,7 +288,7 @@
         size="small"
         icon="pi pi-times"
         text
-        @click="cancelDelete"
+        @click="handlerCancel"
       />
       <Button
         label="确认"
@@ -308,34 +305,24 @@
   <!-- 重置密码 -->
   <Dialog
     v-model:visible="resetPwdDialog"
-    :style="{ width: '380px' }"
+    :style="{ width: '20%' }"
     :modal="true"
-    :closable="false"
+    header="重置密码"
+    @hide="handlerCancel"
   >
-    <template #header>
-      <div class="form-header">
-        <div class="header">
-          <span>重置密码</span>
-          <Button
-            @click="cancelDelete"
-            icon="pi pi-times"
-            rounded
-            severity="secondary"
-            text
-          />
-        </div>
+    <div class="form-container" v-verify="verify">
+      <div class="form-group">
+        <label class="form-label">密码</label>
+        <Password
+          verify="required"
+          promptLabel="密码强度"
+          weakLabel="轻"
+          mediumLabel="中"
+          strongLabel="强"
+          v-model="resetUserObj.password"
+          placeholder="新密码"
+        />
       </div>
-    </template>
-    <div class="reset-form-body">
-      <Password
-        promptLabel="密码强度"
-        weakLabel="轻"
-        mediumLabel="中"
-        strongLabel="强"
-        v-model="resetUserObj.password"
-        inputId="password"
-        placeholder="新密码"
-      />
     </div>
     <template #footer>
       <div class="footer">
@@ -344,6 +331,16 @@
           severity="success"
           icon="pi pi-check"
           @click="handleResetPwd"
+          outlined
+          size="small"
+        />
+        <Button
+          label="取消"
+          severity="warn"
+          icon="pi pi-check"
+          @click="handlerCancel"
+          outlined
+          size="small"
         />
       </div>
     </template>
@@ -351,9 +348,9 @@
 
   <!-- 分配角色 -->
   <Drawer
-    @hide="cancelDelete"
+    @hide="handlerCancel"
     v-model:visible="visibleRight"
-    style="width: 360px"
+    style="width: 30%"
     position="right"
   >
     <template #header>
@@ -401,8 +398,8 @@
         />
         <Button
           size="small"
-          severity="danger"
-          @click="cancelDelete"
+          severity="warn"
+          @click="handlerCancel"
           label="取消"
           outlined
           icon="pi pi-times"
@@ -600,14 +597,16 @@ const handlerMoreOption = (item) => {
 
 //重置密码
 const handleResetPwd = () => {
-  resetPwd(resetUserObj.value).then((res) => {
-    if (res.code === 200) {
-      toast.success("密码重置成功！");
-      resetPwdDialog.value = false;
-      resetUserObj.value.id = null;
-      resetUserObj.value.password = "";
-    }
-  });
+  if (verify.do_verify()) {
+    resetPwd(resetUserObj.value).then((res) => {
+      if (res.code === 200) {
+        toast.success("密码重置成功！");
+        resetPwdDialog.value = false;
+        resetUserObj.value.id = null;
+        resetUserObj.value.password = "";
+      }
+    });
+  }
 };
 
 //新增、修改用户
@@ -690,7 +689,7 @@ const handlerSetValue = () => {
   tempUserName.value = "";
 };
 //取消删除用户
-const cancelDelete = () => {
+const handlerCancel = () => {
   cancelDalog();
   handlerSetValue();
 };
@@ -771,49 +770,19 @@ const handlerDelete = () => {
   font-size: 1.5rem;
 }
 
-.form-header {
-  width: 100%;
+/* 定义表单容器的样式 */
+.form-container {
   display: flex;
-  justify-content: center;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   align-items: center;
+  gap: 10px 50px;
 }
-
-.form-header .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 250px;
-  line-height: 30px;
-}
-
-.header span {
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-.form-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 25px;
-}
-
-.reset-form-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-.form-body div {
+.form-group {
   display: flex;
   flex-direction: column;
   gap: 12px;
-}
-
-.form-body input {
-  width: 250px;
+  margin-bottom: 25px;
 }
 
 :deep(.p-inputtext) {
@@ -824,12 +793,7 @@ const handlerDelete = () => {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
-}
-
-.footer button {
-  width: 250px;
-  margin: 15px 0 15px 0;
+  justify-content: space-between;
 }
 
 .role-container {

@@ -107,7 +107,7 @@
           frozen
           style="min-width: 6rem"
         >
-        <template #body="{ data }">
+          <template #body="{ data }">
             <Tag severity="info" :value="data.id"></Tag>
           </template>
         </Column>
@@ -117,7 +117,7 @@
           field="name"
           style="min-width: 12rem"
         >
-        <template #body="{ data }">
+          <template #body="{ data }">
             <Tag severity="info" :value="data.name"></Tag>
           </template>
         </Column>
@@ -156,7 +156,7 @@
         </Column>
         <Column
           header="操作"
-          style="min-width: 12rem"
+          style="min-width: 10rem"
           frozen
           alignFrozen="right"
         >
@@ -198,43 +198,30 @@
   <!-- 新增、修改字典弹框 -->
   <Dialog
     v-model:visible="addOrEditDictDialog"
-    :style="{ width: '380px' }"
+    :style="{ width: '40%' }"
     :modal="true"
-    :closable="false"
+    :header="dict.id === undefined ? '新增字典' : '修改字典'"
+    @hide="handlerCancel"
   >
-    <template #header>
-      <div class="form-header">
-        <div class="header">
-          <span>{{ dict.id === undefined ? "新增字典" : "修改字典" }}</span>
-          <Button
-            @click="handlerCancel"
-            icon="pi pi-times"
-            rounded
-            severity="secondary"
-            text
-          />
-        </div>
-      </div>
-    </template>
     <div class="form-container" v-verify="verify">
-      <div class="form-row">
-        <label>字典名称</label>
+      <div class="form-group">
+        <label class="form-label">字典名称</label>
         <InputText
           verify="required"
           placeholder="字典名称"
           v-model="dict.name"
         />
       </div>
-      <div class="form-row">
-        <label>字典类型</label>
+      <div class="form-group">
+        <label class="form-label">字典类型</label>
         <InputText
           verify="required"
           placeholder="字典类型"
           v-model="dict.type"
         />
       </div>
-      <div class="form-row">
-        <label>备注</label>
+      <div class="form-group">
+        <label class="form-label">备注</label>
         <Textarea
           verify="required"
           placeholder="备注"
@@ -246,12 +233,22 @@
       </div>
     </div>
     <template #footer>
-      <div class="add-footer">
+      <div class="footer">
         <Button
           label="确认"
           severity="success"
           icon="pi pi-check"
           @click="handlerAddOrEditDict"
+          size="small"
+          outlined
+        />
+        <Button
+          label="取消"
+          severity="warn"
+          icon="pi pi-times"
+          @click="handlerCancel"
+          size="small"
+          outlined
         />
       </div>
     </template>
@@ -520,7 +517,7 @@ const handlerCancelDialog = () => {
 
 const handlerSetValue = () => {
   dict.value = {};
-  deleteRoleId.value = null;
+  deleteDictId.value = null;
 };
 
 const handlerCancel = () => {
@@ -578,41 +575,22 @@ const handlerToData = (data) => {
   font-size: 1.5rem;
 }
 
-.form-header {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.form-header .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 250px;
-  line-height: 30px;
-}
-
-.header span {
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
+/* 定义表单容器的样式 */
 .form-container {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   align-items: center;
-  justify-content: center;
-  gap: 30px;
+  gap: 10px 50px;
 }
-
-.form-row {
+.form-group {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  margin-bottom: 25px;
 }
 
-.form-row input {
+:deep(.p-inputtext) {
   width: 250px;
 }
 
@@ -620,31 +598,10 @@ const handlerToData = (data) => {
   width: 250px;
 }
 
-.role-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.msg-one {
-  margin-top: 10px;
-  line-height: 40px;
-}
-
 .footer {
-  display: flex;
-  justify-content: space-between;
-}
-
-.add-footer {
   width: 100%;
-  margin-top: 10px;
   display: flex;
-  justify-content: center;
-}
-
-.add-footer button {
-  width: 250px;
-  margin-bottom: 20px;
+  align-items: center;
+  justify-content: space-between;
 }
 </style>

@@ -205,16 +205,11 @@
   <!-- 新增菜单弹框 -->
   <Drawer
     v-model:visible="addDirectDrawer"
-    :style="{ width: '45%' }"
+    :style="{ width: '40%' }"
     position="right"
     @hide="handlerCancel"
+    :header="menuDTO.id === undefined ? '新增菜单' : '修改菜单'"
   >
-    <template #header>
-      <span style="font-weight: bold; font-size: 18px">{{
-        menuDTO.id === undefined ? "新增菜单" : "修改菜单"
-      }}</span>
-    </template>
-
     <div class="msg-tip">
       <Message severity="warn">注意：请先选择菜单类型！！！</Message>
     </div>
@@ -293,7 +288,7 @@
           size="small"
           @click="handlerCancel"
           label="取消"
-          severity="danger"
+          severity="warn"
           icon="pi pi-times"
           outlined
         />
@@ -713,26 +708,21 @@ const handlerCancel = () => {
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: center;
-  gap: 10px 30px;
+  gap: 10px 50px;
 }
 .form-group {
   display: flex;
-  align-items: center;
-  margin-bottom: 30px;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 25px;
 }
 
-.form-label {
-  width: 80px;
-  text-align: right;
-  margin-right: 10px;
-}
-
-input[type="text"] {
-  width: 200px;
+:deep(.p-inputtext) {
+  width: 250px;
 }
 
 :deep(.p-select) {
-  width: 200px;
+  width: 250px;
 }
 
 .footer {

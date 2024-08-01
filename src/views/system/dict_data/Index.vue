@@ -200,29 +200,14 @@
   <!-- 新增、修改字典数据弹框 -->
   <Dialog
     v-model:visible="addOrEditDictDataDialog"
-    :style="{ width: '380px' }"
+    :style="{ width: '40%' }"
     :modal="true"
-    :closable="false"
+    @hide="handlerCancel"
+    :header="dictData.id === undefined ? '新增字典数据' : '修改字典数据'"
   >
-    <template #header>
-      <div class="form-header">
-        <div class="header">
-          <span>{{
-            dictData.id === undefined ? "新增字典数据" : "修改字典数据"
-          }}</span>
-          <Button
-            @click="handlerCancel"
-            icon="pi pi-times"
-            rounded
-            severity="secondary"
-            text
-          />
-        </div>
-      </div>
-    </template>
     <div class="form-container" v-verify="verify">
-      <div class="form-row">
-        <label>字典类型</label>
+      <div class="form-group">
+        <label class="form-label">字典类型</label>
         <InputText
           verify="required"
           placeholder="字典类型"
@@ -230,24 +215,24 @@
           disabled
         />
       </div>
-      <div class="form-row">
-        <label>字典标签</label>
+      <div class="form-group">
+        <label class="form-label">字典标签</label>
         <InputText
           verify="required"
           placeholder="字典标签"
           v-model="dictData.label"
         />
       </div>
-      <div class="form-row">
-        <label>字典键值</label>
+      <div class="form-group">
+        <label class="form-label">字典键值</label>
         <InputNumber
           v-model="dictData.value"
           verify="required"
           placeholder="字典键值"
         />
       </div>
-      <div class="form-row">
-        <label>备注</label>
+      <div class="form-group">
+        <label class="form-label">备注</label>
         <Textarea
           verify="required"
           placeholder="备注"
@@ -259,12 +244,22 @@
       </div>
     </div>
     <template #footer>
-      <div class="add-footer">
+      <div class="footer">
         <Button
           label="确认"
           severity="success"
           icon="pi pi-check"
           @click="handlerAddOrEditDictData"
+          size="small"
+          outlined
+        />
+        <Button
+          label="取消"
+          severity="warn"
+          icon="pi pi-times"
+          @click="handlerCancel"
+          size="small"
+          outlined
         />
       </div>
     </template>
@@ -573,38 +568,19 @@ const handlerCancel = () => {
   font-size: 1.5rem;
 }
 
-.form-header {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.form-header .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 250px;
-  line-height: 30px;
-}
-
-.header span {
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
+/* 定义表单容器的样式 */
 .form-container {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   align-items: center;
-  justify-content: center;
-  gap: 30px;
+  gap: 10px 50px;
 }
-
-.form-row {
+.form-group {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  margin-bottom: 25px;
 }
 
 :deep(.p-inputtext) {
@@ -615,31 +591,10 @@ const handlerCancel = () => {
   width: 250px;
 }
 
-.role-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.msg-one {
-  margin-top: 10px;
-  line-height: 40px;
-}
-
 .footer {
-  display: flex;
-  justify-content: space-between;
-}
-
-.add-footer {
   width: 100%;
-  margin-top: 10px;
   display: flex;
-  justify-content: center;
-}
-
-.add-footer button {
-  width: 250px;
-  margin-bottom: 20px;
+  align-items: center;
+  justify-content: space-between;
 }
 </style>
