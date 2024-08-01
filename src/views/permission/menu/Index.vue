@@ -272,7 +272,6 @@
           icon="pi pi-check"
           @click="handlerSaveOrEditMenu"
           outlined
-          text
           :loading="saveLoading"
         />
         <Button
@@ -282,7 +281,6 @@
           severity="danger"
           icon="pi pi-times"
           outlined
-          text
         />
       </div>
     </template>

@@ -218,7 +218,7 @@
       </div>
     </div>
     <template #footer>
-      <div class="footer">
+      <div class="add-footer">
         <Button
           label="确认"
           severity="success"
@@ -304,7 +304,6 @@
           icon="pi fill-transparent pi-check"
           :loading="saveLoading"
           outlined
-          text
         />
         <Button
           size="small"
@@ -312,7 +311,6 @@
           @click="handlerCancel"
           label="取消"
           outlined
-          text
           icon="pi pi-times"
         />
       </div>
@@ -716,5 +714,16 @@ const handlerCancel = () => {
 .footer {
   display: flex;
   justify-content: space-between;
+}
+
+.add-footer {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.add-footer button{
+  width: 250px;
 }
 </style>
