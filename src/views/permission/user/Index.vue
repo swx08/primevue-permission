@@ -201,7 +201,7 @@
   <!-- 新增、修改用户弹框 -->
   <Dialog
     v-model:visible="addOrEditUserDialog"
-    :style="{ width: '40%' }"
+    :style="{ width: '41%' }"
     :modal="true"
     @hide="handlerCancel"
     :header="user.id === undefined ? '新增用户' : '修改用户'"

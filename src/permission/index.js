@@ -11,8 +11,8 @@ export const hasPermission = (app) => {
             //el为元素，options是指令的选项对象
             if (!uesrStore.permissions.includes(options.value)) {
               //说明没有权限，直接删除元素即可
-              // el.remove();
-              // el.setAttribute("disabled", "disabled");
+            //   el.remove();
+              el.setAttribute("disabled", "disabled");
             }
         },
     })

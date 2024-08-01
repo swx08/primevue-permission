@@ -205,7 +205,7 @@
   <!-- 新增菜单弹框 -->
   <Drawer
     v-model:visible="addDirectDrawer"
-    :style="{ width: '40%' }"
+    :style="{ width: '41%' }"
     position="right"
     @hide="handlerCancel"
     :header="menuDTO.id === undefined ? '新增菜单' : '修改菜单'"

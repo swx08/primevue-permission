@@ -198,7 +198,7 @@
   <!-- 新增、修改字典弹框 -->
   <Dialog
     v-model:visible="addOrEditDictDialog"
-    :style="{ width: '40%' }"
+    :style="{ width: '41%' }"
     :modal="true"
     :header="dict.id === undefined ? '新增字典' : '修改字典'"
     @hide="handlerCancel"

@@ -95,7 +95,7 @@ export const asyncRoutes = [
         meta: {
           title: "菜单管理",
           hidden: false,
-          icon: "pi pi-box",
+          icon: "pi pi-bars",
         },
       },
     ],
@@ -118,7 +118,7 @@ export const asyncRoutes = [
         meta: {
           title: "字典管理",
           hidden: false,
-          icon: "pi pi-envelope",
+          icon: "pi pi-folder-open",
         },
       },
       {
@@ -148,7 +148,7 @@ export const asyncRoutes = [
         meta: {
           title: "日志管理",
           hidden: false,
-          icon: "pi pi-box",
+          icon: "pi pi-prime",
         },
       },
     ],

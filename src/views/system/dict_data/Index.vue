@@ -200,7 +200,7 @@
   <!-- 新增、修改字典数据弹框 -->
   <Dialog
     v-model:visible="addOrEditDictDataDialog"
-    :style="{ width: '40%' }"
+    :style="{ width: '41%' }"
     :modal="true"
     @hide="handlerCancel"
     :header="dictData.id === undefined ? '新增字典数据' : '修改字典数据'"

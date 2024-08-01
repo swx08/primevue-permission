@@ -7,7 +7,7 @@
                         {{ Setting.title }}
                     </div>
                     <div class="tip">
-                        Hi, Welcome Back!
+                        嗨，欢迎回来！
                     </div>
                     <div class="content">
                         <FloatLabel>
@@ -49,8 +49,8 @@ import router from "@/router";
 const loading = ref(false);
 const userStore = useUserStore();
 const user = ref({
-    username: '',
-    password: '',
+    username: 'swx',
+    password: '123456',
     checked: true,
 });
 onMounted(() => { })
@@ -99,9 +99,11 @@ const handlerDoLogin = async () => {
 
                 .tip {
                     font-size: 15px;
-                    color: #5c5c5c;
+                    color: #4A766E;
                     text-align: center;
-                    margin: 35px;
+                    margin: 25px;
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    font-weight: 600;
                 }
 
                 .content {

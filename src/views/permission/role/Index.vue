@@ -193,7 +193,7 @@
   <!-- 新增、修改角色弹框 -->
   <Dialog
     v-model:visible="addOrEditRoleDialog"
-    :style="{ width: '40%' }"
+    :style="{ width: '41%' }"
     :modal="true"
     :header="role.id === undefined ? '新增角色' : '修改角色'"
     @hide="handlerCancel"
