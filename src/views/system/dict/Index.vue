@@ -52,7 +52,7 @@
                     optionLabel="label"
                     optionValue="value"
                   />
-                  <label for="dd-city">角色状态</label>
+                  <label for="dd-city">字典状态</label>
                 </FloatLabel>
               </div>
               <div class="panel-right">
@@ -527,7 +527,7 @@ const handlerCancel = () => {
 
 //跳转到字典数据
 const handlerToData = (data) => {
-  router.push({ name: "DictData", query: { id: data.id, type: data.type } });
+  router.push({ name: "DictData", query: { type: data.type } });
 };
 </script>
 

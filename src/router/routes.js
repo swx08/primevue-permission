@@ -33,16 +33,6 @@ export const constantRoutes = [
       icon: "UploadFilled",
     },
   },
-  // {
-  //   path: "/register",
-  //   name: "Register",
-  //   component: () => import("@/views/register/Index.vue"),
-  //   meta: {
-  //     title: "注册",
-  //     hidden: true,
-  //     icon: "UploadFilled",
-  //   },
-  // },
   {
     path: "/404",
     name: "404",
