@@ -121,6 +121,9 @@
           sortable
           style="min-width: 15rem"
         >
+          <template #body="{ data }">
+            <Button text link :label="data.type" @click="handlerToData(data)" />
+          </template>
         </Column>
         <Column header="状态" field="status" style="min-width: 8rem">
           <template #body="{ data }">
@@ -292,6 +295,7 @@ import {
   updateDict,
   batchDelete,
 } from "@/api/dict";
+import router from "@/router";
 
 //表单校验
 const verify = create_verify({
@@ -510,6 +514,11 @@ const handlerSetValue = () => {
 const handlerCancel = () => {
   handlerCancelDialog();
   handlerSetValue();
+};
+
+//跳转到字典数据
+const handlerToData = (data) => {
+  router.push({ name: "DictData", query: { id: data.id, type: data.type } });
 };
 </script>
 
