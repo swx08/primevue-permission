@@ -7,6 +7,7 @@
         </div>
     </div>
 
+    <!-- 右侧控制主题按钮 -->
     <RightButton />
 </template>
 
@@ -27,12 +28,5 @@ onMounted(() => {})
     display: flex;
     padding: $base-padding;
     background-color: $base-background;
-}
-
-.fade-enter-to {
-    opacity: 1;
-    transform: scale(1);
-    /* 缩放到1，即正常尺寸 */
-    transform-origin: center;
 }
 </style>

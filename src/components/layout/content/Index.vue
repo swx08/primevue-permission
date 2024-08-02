@@ -38,7 +38,7 @@ watch(
 </script>
 <style scoped lang='scss'>
 .layout-content {
-  height: calc(100vh - $base-header-height - $base-header-padding * 3);
+  height: calc(100vh - $base-header-height - ($base-header-padding * 3));
   width: calc(100vw - $base-aside-width);
   margin: $base-content-margin;
   transition: all 0.3s;
@@ -50,7 +50,7 @@ watch(
 }
 
 .scrollbarWrap {
-  height: calc(100vh - $base-header-height - $base-header-padding * 3);
+  height: calc(100vh - $base-header-height - ($base-header-padding * 3));
   width: 100%;
 }
 

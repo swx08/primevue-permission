@@ -23,7 +23,7 @@ onMounted(() => { })
 <style scoped lang='scss'>
 .logo {
     height: $base-header-height;
-    padding: $base-header-padding;
+    padding: $base-logo-padding;
     display: flex;
     align-items: center;
     font-size: 18px;
