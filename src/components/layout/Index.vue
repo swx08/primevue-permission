@@ -26,7 +26,6 @@ onMounted(() => {})
     height: 100vh;
     width: 100vw;
     display: flex;
-    padding: $base-padding;
     background-color: $base-background;
 }
 </style>

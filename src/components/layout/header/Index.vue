@@ -25,8 +25,6 @@ onMounted(() => { })
 .layout-header {
   height: $base-header-height;
   width: calc(100vw - $base-aside-width);
-  margin-left: $base-header-margin;
-  padding: 0 16px 0 16px;
   transition: all 0.3s;
 
   .header-content {
@@ -44,5 +42,9 @@ onMounted(() => { })
 
 :deep(.p-card-body) {
   padding: 0;
+}
+
+.p-card {
+  border-radius: 0;
 }
 </style>

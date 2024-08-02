@@ -13,11 +13,12 @@ onMounted(() => { })
 <style scoped lang='scss'>
 .layout-aside {
   width: $base-aside-width;
-  height: calc(100vh - ($base-header-padding * 2));
+  height: 100vh;
 }
 
 :deep(.v-sidebar-menu) {
-  margin: $base-menu-margin;
-  border-radius: $base-menu-border-radius;
+  &.darkMode {
+    background-color: #18181b;
+  }
 }
 </style>

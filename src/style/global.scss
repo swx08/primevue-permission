@@ -1,26 +1,22 @@
 //设置全局样式
 
 // 头部高度
-$base-header-height: 66px;
+$base-header-height: 64px;
 
 //左侧宽度
-$base-aside-width: 255px;
+$base-aside-width: 220px;
 
 //左侧宽度
-$base-aside-collapsed-width: 100px;
+$base-aside-collapsed-width: 64px;
+
+//logo
+$base-logo-padding: 16px;
+
+//内容展示区内边距
+$base-content-padding: 16px 16px 0 16px;
 
 //背景颜色
 $base-background: #f6f8fc;
 
 //滚动条背景颜色
 $simplebar-scrollbar-backColor: #272E3B;
-
-//logo内间距
-$base-logo-padding: 16px;
-
-$base-padding: 16px 16px 0 0;
-$base-menu-margin: 16px 0 16px 0;
-$base-menu-border-radius: 0 12px 12px 0;
-$base-header-padding: 16px;
-$base-header-margin: 16px;
-$base-content-margin: 16px 0 0 16px;

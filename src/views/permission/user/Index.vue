@@ -417,7 +417,7 @@ import {
   deleteUser,
   updateUserStatus,
   resetPwd,
-  register,
+  saveUser,
   queryEchoUserInfo,
   updateUserInfo,
   saveRoles,
@@ -628,7 +628,7 @@ const handlerAddOrEditUser = () => {
 
 //新增用户提交
 const addUser = (item) => {
-  register(item).then((res) => {
+  saveUser(item).then((res) => {
     if (res.code === 200) {
       toast.success("新增成功！");
       addOrEditUserDialog.value = false;

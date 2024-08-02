@@ -12,10 +12,10 @@ export function doLogin(data) {
   });
 }
 
-export function register(data) {
+export function saveUser(data) {
   return request({
     //模板字符串拼接参数
-    url: `${PREFIX}/register`,
+    url: `${PREFIX}/add`,
     method: "POST",
     data: data,
   });
